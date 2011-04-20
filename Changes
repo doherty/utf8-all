@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+    * Add unimport()
 
 0.001     2011-04-20
     * Split code out of perl5i

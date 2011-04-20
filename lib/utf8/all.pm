@@ -63,6 +63,10 @@ sub import {
     
 }
 
+sub unimport {
+    $^H{'utf8::all'} = 0;
+}
+
 sub utf8_open(*;$@) {  ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     my $ret;
     if( @_ == 1 ) {
