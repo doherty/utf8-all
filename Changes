@@ -1,4 +1,4 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
-    *
+    * Split code out of perl5i
