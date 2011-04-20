@@ -1,0 +1,68 @@
+NAME
+    utf8::all - turn on unicode. All of it.
+
+VERSION
+    version 0.001
+
+SYNOPSIS
+        use utf8::all; # Turn on UTF-8. All of it.
+
+        open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
+        print length 'føø bār';             # 7 UTF-8 characters
+        my $utf8_arg = shift @ARGV;         # @ARGV is UTF-8 too!
+
+DESCRIPTION
+    utf8 allows you to write your Perl encoded in UTF-8. That means UTF-8
+    strings, variable names, and regular expressions. "utf8::all" goes
+    further, and makes @ARGV encoded in UTF-8, and filehandles are opened
+    with UTF-8 encoding turned on by default (including STDIN, STDOUT,
+    STDERR). If you *don't* want UTF-8 for a particular filehandle, you'll
+    have to set "binmode $filehandle".
+
+    The pragma is lexically-scoped, so you can do the following if you had
+    some reason to:
+
+        {
+            use utf8::all;
+            open my $out, '>', 'outfile';
+            my $utf8_str = 'føø bār';
+            print length $utf8_str, "\n"; # 7
+            print $out $utf8_str;         # out as utf8
+        }
+        open my $in, '<', 'outfile';      # in as raw
+        my $text = do { local $/; <$in>};
+        print length $text, "\n";         # 10, not 7!
+
+AVAILABILITY
+    The latest version of this module is available from the Comprehensive
+    Perl Archive Network (CPAN). Visit <http://www.perl.com/CPAN/> to find a
+    CPAN site near you, or see <http://search.cpan.org/dist/utf8-all/>.
+
+    The development version lives at <http://github.com/doherty/utf8-all>
+    and may be cloned from <git://github.com/doherty/utf8-all.git>. Instead
+    of sending patches, please fork this project using the standard git and
+    github infrastructure.
+
+SOURCE
+    The development version is on github at
+    <http://github.com/doherty/utf8-all> and may be cloned from
+    <git://github.com/doherty/utf8-all.git>
+
+BUGS AND LIMITATIONS
+    No bugs have been reported.
+
+    Please report any bugs or feature requests through the web interface at
+    <https://github.com/doherty/utf8-all/issues>.
+
+AUTHORS
+    *   Michael Schwern <mschwern@cpan.org>
+
+    *   Mike Doherty <doherty@cpan.org>
+
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2009 by Michael Schwern
+    <mschwern@cpan.org>.
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
+
