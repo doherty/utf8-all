@@ -44,14 +44,14 @@ use parent 'open';
 sub import {
     my $class = shift;
 
-    $^H{'utf8::all'} = 1; # Is that allowed?
+    $^H{'utf8::all'} = 1;
     
     # utf8 source code
     utf8::import($class);
-    
+
     # utf8 by default on filehandles
-    open::import($class, ":encoding(UTF-8)");
-    open::import($class, ":std");
+    open::import($class, ':encoding(UTF-8)');
+    open::import($class, ':std');
     {
         no strict 'refs'; ## no critic (TestingAndDebugging::ProhibitNoStrict)
         *{$class . '::open'} = \&utf8_open;
@@ -60,11 +60,12 @@ sub import {
     #utf8 in @ARGV
     state $have_encoded_argv = 0;
     _encode_argv() unless $have_encoded_argv++;
-    
+    return;
 }
 
 sub unimport {
     $^H{'utf8::all'} = 0;
+    return;
 }
 
 sub utf8_open(*;$@) {  ## no critic (Subroutines::ProhibitSubroutinePrototypes)
@@ -80,7 +81,7 @@ sub utf8_open(*;$@) {  ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     return $ret unless $ret;
 
     my $h = (caller 1)[10];
-    binmode $_[0], ":encoding(UTF-8)" if $h->{'utf8::all'};
+    binmode $_[0], ':encoding(UTF-8)' if $h->{'utf8::all'};
     return $ret;
 }
 
