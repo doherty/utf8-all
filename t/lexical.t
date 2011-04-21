@@ -11,7 +11,7 @@ BEGIN {
 # It shouldn't effect the rest of the program.
 { use utf8::all }
 
-is_deeply \@ARGV, ["f\x{f8}\x{f8}", 'bar', "b\x{101}z"] or diag explain \@ARGV;
+is_deeply \@ARGV, ["f\x{f8}\x{f8}", 'bar', "b\x{101}z"];
 
 { # Bring utf8::all back into effect
     use utf8::all;
