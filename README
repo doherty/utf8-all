@@ -2,7 +2,7 @@ NAME
     utf8::all - turn on unicode. All of it.
 
 VERSION
-    version 0.001
+    version 0.002
 
 SYNOPSIS
         use utf8::all; # Turn on UTF-8. All of it.
@@ -34,6 +34,8 @@ DESCRIPTION
         print length $text, "\n";         # 10, not 7!
 
 AVAILABILITY
+    The project homepage is <http://p3rl.org/utf8::all>.
+
     The latest version of this module is available from the Comprehensive
     Perl Archive Network (CPAN). Visit <http://www.perl.com/CPAN/> to find a
     CPAN site near you, or see <http://search.cpan.org/dist/utf8-all/>.
