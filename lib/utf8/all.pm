@@ -92,6 +92,7 @@ sub _encode_argv {
 
 =for Pod::Coverage
 utf8_open
+unimport
 =cut
 
 1;
