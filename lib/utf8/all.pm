@@ -2,7 +2,7 @@ package utf8::all;
 use strict;
 use warnings;
 use 5.010; # state
-# ABSTRACT: turn on unicode. All of it.
+# ABSTRACT: turn on Unicode - all of it
 # VERSION
 
 =head1 SYNOPSIS
