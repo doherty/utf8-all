@@ -52,37 +52,11 @@ sub import {
     # utf8 by default on filehandles
     open::import($class, ':encoding(UTF-8)');
     open::import($class, ':std');
-    {
-        no strict 'refs'; ## no critic (TestingAndDebugging::ProhibitNoStrict)
-        *{$class . '::open'} = \&utf8_open;
-    }
 
-    #utf8 in @ARGV
+    # utf8 in @ARGV
     state $have_encoded_argv = 0;
     _encode_argv() unless $have_encoded_argv++;
     return;
-}
-
-sub unimport {
-    $^H{'utf8::all'} = 0;
-    return;
-}
-
-sub utf8_open(*;$@) {  ## no critic (Subroutines::ProhibitSubroutinePrototypes)
-    my $ret;
-    if( @_ == 1 ) {
-        $ret = CORE::open $_[0];
-    }
-    else {
-        $ret = CORE::open $_[0], $_[1], @_[2..$#_];
-    }
-
-    # Don't try to binmode an unopened filehandle
-    return $ret unless $ret;
-
-    my $h = (caller 1)[10];
-    binmode $_[0], ':encoding(UTF-8)' if $h->{'utf8::all'};
-    return $ret;
 }
 
 sub _encode_argv {
