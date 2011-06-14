@@ -1,9 +1,9 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+    * Internal refactoring
 
 0.002     2011-04-21
-    * Add unimport()
     * Expand test suite slightly
 
 0.001     2011-04-20

@@ -50,8 +50,7 @@ sub import {
     utf8::import($class);
 
     # utf8 by default on filehandles
-    open::import($class, ':encoding(UTF-8)');
-    open::import($class, ':std');
+    open::import($class, ':encoding(UTF-8)', ':std');
 
     # utf8 in @ARGV
     state $have_encoded_argv = 0;
