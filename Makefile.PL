@@ -2,37 +2,42 @@
 use strict;
 use warnings;
 
-BEGIN { require 5.010; }
+use 5.010;
 
-use ExtUtils::MakeMaker 6.31;
+use ExtUtils::MakeMaker 6.30;
 
 
 
 my %WriteMakefileArgs = (
-  'ABSTRACT' => 'turn on unicode. All of it.',
-  'AUTHOR' => 'Michael Schwern <mschwern@cpan.org>, Mike Doherty <doherty@cpan.org>',
-  'BUILD_REQUIRES' => {
-    'File::Find' => '0',
-    'File::Temp' => '0',
-    'PerlIO' => '0',
-    'Test::More' => '0'
+  "ABSTRACT" => "turn on Unicode - all of it",
+  "AUTHOR" => "Michael Schwern <mschwern\@cpan.org>, Mike Doherty <doherty\@cpan.org>",
+  "BUILD_REQUIRES" => {
+    "File::Find" => 0,
+    "File::Temp" => 0,
+    "Module::Build" => "0.3601",
+    "PerlIO" => 0,
+    "Test::More" => 0
   },
-  'CONFIGURE_REQUIRES' => {
-    'ExtUtils::MakeMaker' => '6.31'
+  "CONFIGURE_REQUIRES" => {
+    "ExtUtils::MakeMaker" => "6.30",
+    "Module::Build" => "0.3601"
   },
-  'DISTNAME' => 'utf8-all',
-  'EXE_FILES' => [],
-  'LICENSE' => 'perl',
-  'NAME' => 'utf8::all',
-  'PREREQ_PM' => {
-    'Encode' => '0',
-    'open' => '0',
-    'parent' => '0',
-    'utf8' => '0'
+  "DISTNAME" => "utf8-all",
+  "EXE_FILES" => [],
+  "LICENSE" => "perl",
+  "NAME" => "utf8::all",
+  "PREREQ_PM" => {
+    "Encode" => 0,
+    "charnames" => 0,
+    "open" => 0,
+    "parent" => 0,
+    "strict" => 0,
+    "utf8" => 0,
+    "warnings" => 0
   },
-  'VERSION' => '0.002',
-  'test' => {
-    'TESTS' => 't/*.t'
+  "VERSION" => "v0.3",
+  "test" => {
+    "TESTS" => "t/*.t"
   }
 );
 

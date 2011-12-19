@@ -1,8 +1,8 @@
 NAME
-    utf8::all - turn on unicode. All of it.
+    utf8::all - turn on Unicode - all of it
 
 VERSION
-    version 0.002
+    version v0.3
 
 SYNOPSIS
         use utf8::all; # Turn on UTF-8. All of it.
@@ -16,8 +16,9 @@ DESCRIPTION
     strings, variable names, and regular expressions. "utf8::all" goes
     further, and makes @ARGV encoded in UTF-8, and filehandles are opened
     with UTF-8 encoding turned on by default (including STDIN, STDOUT,
-    STDERR). If you *don't* want UTF-8 for a particular filehandle, you'll
-    have to set "binmode $filehandle".
+    STDERR), and charnames are imported so "\N{...}" sequences can be used
+    to compile Unicode characters based on names. If you *don't* want UTF-8
+    for a particular filehandle, you'll have to set "binmode $filehandle".
 
     The pragma is lexically-scoped, so you can do the following if you had
     some reason to:
