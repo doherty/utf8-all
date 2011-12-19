@@ -2,6 +2,7 @@ Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
     * Internal refactoring
+    * Load charnames [sartak]
 
 0.002     2011-04-21
     * Expand test suite slightly
