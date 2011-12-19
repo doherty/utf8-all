@@ -18,8 +18,10 @@ use 5.010; # state
 L<utf8> allows you to write your Perl encoded in UTF-8. That means UTF-8
 strings, variable names, and regular expressions. C<utf8::all> goes further, and
 makes C<@ARGV> encoded in UTF-8, and filehandles are opened with UTF-8 encoding
-turned on by default (including STDIN, STDOUT, STDERR). If you I<don't> want
-UTF-8 for a particular filehandle, you'll have to set C<binmode $filehandle>.
+turned on by default (including STDIN, STDOUT, STDERR), and charnames are
+imported so C<\N{...}> sequences can be used to compile Unicode characters based
+on names. If you I<don't> want UTF-8 for a particular filehandle, you'll have to
+set C<binmode $filehandle>.
 
 The pragma is lexically-scoped, so you can do the following if you had some
 reason to:
@@ -38,6 +40,7 @@ reason to:
 =cut
 
 use Encode ();
+use charnames ();
 use parent 'utf8';
 use parent 'open';
 
@@ -51,6 +54,9 @@ sub import {
 
     # utf8 by default on filehandles
     open::import($class, ':encoding(UTF-8)', ':std');
+
+    # charnames (\N{...})
+    charnames::import($class, ':full', ':short');
 
     # utf8 in @ARGV
     state $have_encoded_argv = 0;
