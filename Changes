@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.003     2011-12-21
     * Internal refactoring
     * Load charnames [sartak]
 
