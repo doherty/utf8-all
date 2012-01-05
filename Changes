@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.004     2012-01-04
     * Fix test suite for less current versions of Perl [getty, doherty]
 
 0.003     2011-12-21
