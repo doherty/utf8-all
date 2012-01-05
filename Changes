@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+    * Fix test suite for less current versions of Perl [getty, doherty]
 
 0.003     2011-12-21
     * Internal refactoring
