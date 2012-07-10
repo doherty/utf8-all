@@ -65,9 +65,14 @@ sub _encode_argv {
     return;
 }
 
-=for Pod::Coverage
-utf8_open
-unimport
+=head1 INTERACTION WITH AUTODIE
+
+If you use L<autodie>, which is a great idea, you need to use at least version
+B<2.12>, released on L<June 26, 2012|https://metacpan.org/source/PJF/autodie-2.12/Changes#L3>.
+Otherwise, autodie obliterates the IO layers set by the L<open> pragma. See
+L<RT #54777|https://rt.cpan.org/Ticket/Display.html?id=54777> and
+L<GH #7|https://github.com/doherty/utf8-all/issues/7>.
+
 =cut
 
 1;

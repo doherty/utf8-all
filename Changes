@@ -2,6 +2,7 @@ Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
     * Use Import::Into instead of home-grown "solution" [GH #10]
+    * Don't permit running with autodie < 2.12, due to RT #54777 [GH #7]
 
 0.004     2012-01-04
     * Fix test suite for less current versions of Perl [getty, doherty]
