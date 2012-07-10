@@ -41,15 +41,17 @@ reason to:
 
 use Import::Into;
 use Encode ();
-use charnames ();
+use parent 'charnames';
 use parent 'utf8';
 use parent 'open';
+use parent 'warnings';
 
 sub import {
     my $target = caller;
     'utf8'->import::into($target);
     'open'->import::into($target, qw{:encoding(UTF-8) :std});
     'charnames'->import::into($target, qw{:full :short});
+    'warnings'->import::into($target, qw{FATAL utf8});
 
     # utf8 in @ARGV
     state $have_encoded_argv = 0;
