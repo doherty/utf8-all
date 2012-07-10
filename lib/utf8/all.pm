@@ -39,28 +39,24 @@ reason to:
 
 =cut
 
+use Import::Into;
 use Encode ();
 use charnames ();
 use parent 'utf8';
 use parent 'open';
 
 sub import {
-    my $class = shift;
-
-    $^H{'utf8::all'} = 1;
-    
-    # utf8 source code
-    utf8::import($class);
-
-    # utf8 by default on filehandles
-    open::import($class, ':encoding(UTF-8)', ':std');
-
-    # charnames (\N{...})
-    charnames::import($class, ':full', ':short');
+    my $target = caller;
+    'utf8'->import::into($target);
+    'open'->import::into($target, qw{:encoding(UTF-8) :std});
+    'charnames'->import::into($target, qw{:full :short});
 
     # utf8 in @ARGV
     state $have_encoded_argv = 0;
     _encode_argv() unless $have_encoded_argv++;
+
+    $^H{'utf8::all'} = 1;
+
     return;
 }
 

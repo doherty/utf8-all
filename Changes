@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+    * Use Import::Into instead of home-grown "solution" [GH #10]
 
 0.004     2012-01-04
     * Fix test suite for less current versions of Perl [getty, doherty]
