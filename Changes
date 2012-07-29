@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+    * Be less strict with detecting fatal UTF-8 error in test suite [GH #12]
 
 0.005     2012-07-29
     * Use Import::Into instead of home-grown "solution" [GH #10]
