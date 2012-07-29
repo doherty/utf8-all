@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.006     2012-07-29
     * Be less strict with detecting fatal UTF-8 error in test suite [GH #12]
 
 0.005     2012-07-29

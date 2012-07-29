@@ -2,7 +2,7 @@ NAME
     utf8::all - turn on Unicode - all of it
 
 VERSION
-    version 0.005
+    version 0.006
 
 SYNOPSIS
         use utf8::all; # Turn on UTF-8. All of it.
