@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+    * Use version.pm for comparing versions in the test suite
 
 0.006     2012-07-29
     * Be less strict with detecting fatal UTF-8 error in test suite [GH #12]
