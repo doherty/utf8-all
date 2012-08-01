@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.007     2012-08-01
     * Use version.pm for comparing versions in the test suite
     * Better detection of warnings in t/FATAL_utf8.t
     * Don't fail the test suite if autodie is too old

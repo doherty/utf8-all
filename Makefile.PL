@@ -13,13 +13,14 @@ my %WriteMakefileArgs = (
   "ABSTRACT" => "turn on Unicode - all of it",
   "AUTHOR" => "Michael Schwern <mschwern\@cpan.org>, Mike Doherty <doherty\@cpan.org>",
   "BUILD_REQUIRES" => {
-    "Capture::Tiny" => 0,
     "File::Find" => 0,
     "File::Temp" => 0,
     "Module::Build" => "0.3601",
     "PerlIO" => 0,
     "Test::More" => 0,
-    "autodie" => 0
+    "Test::Warn" => 0,
+    "autodie" => 0,
+    "version" => "0.77"
   },
   "CONFIGURE_REQUIRES" => {
     "Dist::CheckConflicts" => "0.02",
@@ -40,7 +41,7 @@ my %WriteMakefileArgs = (
     "utf8" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.006",
+  "VERSION" => "0.007",
   "test" => {
     "TESTS" => "t/*.t"
   }

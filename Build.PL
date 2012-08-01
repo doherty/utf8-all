@@ -8,13 +8,14 @@ check_conflicts();
 
 my %module_build_args = (
   "build_requires" => {
-    "Capture::Tiny" => 0,
     "File::Find" => 0,
     "File::Temp" => 0,
     "Module::Build" => "0.3601",
     "PerlIO" => 0,
     "Test::More" => 0,
-    "autodie" => 0
+    "Test::Warn" => 0,
+    "autodie" => 0,
+    "version" => "0.77"
   },
   "configure_requires" => {
     "Dist::CheckConflicts" => "0.02",
@@ -26,7 +27,7 @@ my %module_build_args = (
     "Mike Doherty <doherty\@cpan.org>"
   ],
   "dist_name" => "utf8-all",
-  "dist_version" => "0.006",
+  "dist_version" => "0.007",
   "license" => "perl",
   "module_name" => "utf8::all",
   "recommends" => {},
