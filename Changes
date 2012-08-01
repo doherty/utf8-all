@@ -3,6 +3,7 @@ Revision history for Perl module {{$dist->name}}
 {{$NEXT}}
     * Use version.pm for comparing versions in the test suite
     * Better detection of warnings in t/FATAL_utf8.t
+    * Don't fail the test suite if autodie is too old
 
 0.006     2012-07-29
     * Be less strict with detecting fatal UTF-8 error in test suite [GH #12]
