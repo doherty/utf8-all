@@ -40,11 +40,7 @@ reason to:
 =cut
 
 use Import::Into;
-use Encode ();
-use parent 'charnames';
-use parent 'utf8';
-use parent 'open';
-use parent 'warnings';
+use parent qw(Encode charnames utf8 open warnings feature);
 
 sub import {
     my $target = caller;
@@ -52,6 +48,7 @@ sub import {
     'open'->import::into($target, qw{:encoding(UTF-8) :std});
     'charnames'->import::into($target, qw{:full :short});
     'warnings'->import::into($target, qw{FATAL utf8});
+    'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
 
     # utf8 in @ARGV
     state $have_encoded_argv = 0;
