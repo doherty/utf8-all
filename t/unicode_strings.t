@@ -3,8 +3,12 @@
 
 use strict;
 use warnings;
-use Test::More tests => 13;
+use Test::More;
+plan $^V >= v5.14.0
+    ? (tests => 13)
+    : (skip_all => q/character set modifiers aren't available until 5.14.0/);
 
+my $code = <<'TEST_CODE';
 # Straight out of t/re/pat.t
 {   # Test that charset modifier work, and are interpolated
     is(qr/\b\v$/, '(?^:\b\v$)', 'Verify no locale, no unicode_strings gives default modifier');
@@ -33,3 +37,5 @@ use Test::More tests => 13;
     is(qr/abc$dual/,    '(?^l:abc(?^:\b\v$))', 'Verify retains d meaning when interpolated under locale');
     is(qr/abc$unicode/,    '(?^l:abc(?^u:\b\v$))', 'Verify retains u when interpolated under locale');
 }
+TEST_CODE
+eval $code;

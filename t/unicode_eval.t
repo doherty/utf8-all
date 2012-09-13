@@ -3,7 +3,10 @@
 
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More;
+plan $^V >= v5.16.0
+    ? (tests => 5)
+    : (skip_all => q/Can't enable unicode_eval on perl < 5.16.0/);
 
 # straight out of t/uni/eval.t
 use utf8::all;

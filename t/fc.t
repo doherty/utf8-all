@@ -3,7 +3,10 @@
 
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More;
+plan $^V >= v5.16.0
+    ? (tests => 3)
+    : (skip_all => q/Can't enable fc on perl < 5.16.0/);
 
 {
     no warnings qw(syntax);
