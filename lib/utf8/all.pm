@@ -49,6 +49,7 @@ sub import {
     'charnames'->import::into($target, qw{:full :short});
     'warnings'->import::into($target, qw{FATAL utf8});
     'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
+    'feature'->import::into($target, qw{unicode_eval fc}) if $^V >= v5.16.0;
 
     # utf8 in @ARGV
     state $have_encoded_argv = 0;
