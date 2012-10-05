@@ -4,6 +4,7 @@ Revision history for Perl module {{$dist->name}}
     * Enable unicode_strings (see perldoc feature) [GH #2]
     * Enable unicode_eval (see perldoc feature) [GH #2]
     * Enable fc (see perldoc fc) [GH #2]
+    * Wrap CORE::readdir to provide UTF-8 filenames [GH #11]
 
 0.007     2012-08-01
     * Use version.pm for comparing versions in the test suite
