@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.008     2012-10-24
     * Enable unicode_strings (see perldoc feature) [GH #2]
     * Enable unicode_eval (see perldoc feature) [GH #2]
     * Enable fc (see perldoc fc) [GH #2]

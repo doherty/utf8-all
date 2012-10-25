@@ -17,7 +17,8 @@ my %WriteMakefileArgs = (
     "File::Temp" => 0,
     "Module::Build" => "0.3601",
     "PerlIO" => 0,
-    "Test::More" => 0,
+    "Test::Fatal" => 0,
+    "Test::More" => "0.96",
     "Test::Warn" => 0,
     "autodie" => 0,
     "version" => "0.77"
@@ -35,13 +36,14 @@ my %WriteMakefileArgs = (
     "Encode" => 0,
     "Import::Into" => 0,
     "charnames" => 0,
+    "feature" => 0,
     "open" => 0,
     "parent" => 0,
     "strict" => 0,
     "utf8" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.007",
+  "VERSION" => "0.008",
   "test" => {
     "TESTS" => "t/*.t"
   }

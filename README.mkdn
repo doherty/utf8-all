@@ -4,7 +4,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.007
+version 0.008
 
 # SYNOPSIS
 

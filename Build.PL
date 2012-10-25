@@ -12,7 +12,8 @@ my %module_build_args = (
     "File::Temp" => 0,
     "Module::Build" => "0.3601",
     "PerlIO" => 0,
-    "Test::More" => 0,
+    "Test::Fatal" => 0,
+    "Test::More" => "0.96",
     "Test::Warn" => 0,
     "autodie" => 0,
     "version" => "0.77"
@@ -27,7 +28,7 @@ my %module_build_args = (
     "Mike Doherty <doherty\@cpan.org>"
   ],
   "dist_name" => "utf8-all",
-  "dist_version" => "0.007",
+  "dist_version" => "0.008",
   "license" => "perl",
   "module_name" => "utf8::all",
   "recommends" => {},
@@ -37,6 +38,7 @@ my %module_build_args = (
     "Encode" => 0,
     "Import::Into" => 0,
     "charnames" => 0,
+    "feature" => 0,
     "open" => 0,
     "parent" => 0,
     "perl" => "5.010",
