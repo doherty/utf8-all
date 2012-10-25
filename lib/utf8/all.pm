@@ -73,9 +73,16 @@ sub _encode_argv {
 
 sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     my $handle = shift;
-    my @files  = readdir($handle);
-    $_ = Encode::decode('UTF-8', $_) for @files;
-    return @files;
+    if (wantarray) {
+        my @all_files  = CORE::readdir($handle);
+        $_ = Encode::decode('UTF-8', $_) for @all_files;
+        return @all_files;
+    }
+    else {
+        my $next_file = CORE::readdir($handle);
+        $next_file = Encode::decode('UTF-8', $next_file);
+        return $next_file;
+    }
 }
 
 =head1 INTERACTION WITH AUTODIE
