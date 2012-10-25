@@ -51,6 +51,11 @@ sub import {
     'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
     'feature'->import::into($target, qw{unicode_eval fc}) if $^V >= v5.16.0;
 
+    {
+        no strict qw(refs); ## no critic (TestingAndDebugging::ProhibitNoStrict)
+        *{$target . '::readdir'} = \&_utf8_readdir;
+    }
+
     # utf8 in @ARGV
     state $have_encoded_argv = 0;
     _encode_argv() unless $have_encoded_argv++;
@@ -63,6 +68,20 @@ sub import {
 sub _encode_argv {
     $_ = Encode::decode('UTF-8', $_) for @ARGV;
     return;
+}
+
+sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
+    my $handle = shift;
+    if (wantarray) {
+        my @all_files  = CORE::readdir($handle);
+        $_ = Encode::decode('UTF-8', $_) for @all_files;
+        return @all_files;
+    }
+    else {
+        my $next_file = CORE::readdir($handle);
+        $next_file = Encode::decode('UTF-8', $next_file);
+        return $next_file;
+    }
 }
 
 =head1 INTERACTION WITH AUTODIE
