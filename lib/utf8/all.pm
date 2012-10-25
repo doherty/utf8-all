@@ -53,7 +53,6 @@ sub import {
 
     {
         no strict qw(refs); ## no critic (TestingAndDebugging::ProhibitNoStrict)
-        no warnings qw(redefine);
         *{$target . '::readdir'} = \&_utf8_readdir;
     }
 
