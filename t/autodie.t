@@ -20,10 +20,10 @@ subtest 'autodie first' => sub {
     use utf8::all;
 
     opendir my $dh, 'corpus';
-    my @files =  grep { !m{^\.} } readdir $dh;
+    my @files =  sort grep { !m{^\.} } readdir $dh;
     closedir $dh;
 
-    is_deeply \@files, ["\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}", "testfile"];
+    is_deeply \@files, [sort "\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}", "testfile"];
 
     my $exception = exception { opendir my $no_dh, 'nonexistent' };
     like $exception => qr/No such file or directory/;
@@ -35,10 +35,10 @@ subtest 'autodie last' => sub {
     use autodie;
 
     opendir my $dh, 'corpus';
-    my @files =  grep { !m{^\.} } readdir $dh;
+    my @files = sort grep { !m{^\.} } readdir $dh;
     closedir $dh;
 
-    is_deeply \@files, ["\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}", "testfile"];
+    is_deeply \@files, [ sort "\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}", "testfile"];
 
     my $exception = exception { opendir my $no_dh, 'nonexistent' };
     like $exception, qr/No such file or directory/;

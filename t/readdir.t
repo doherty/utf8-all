@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More 0.96 tests => 2;
+use Encode qw/decode FB_CROAK/;
 
 subtest utf8 => sub {
     plan tests => 3;
@@ -8,18 +9,18 @@ subtest utf8 => sub {
     opendir my $dh, 'corpus'
         or die "Couldn't open directory 'corpus'";
 
-    my @files =  grep { $_ ne '.' and $_ ne '..' } readdir $dh;
+    my @files = sort grep { $_ ne '.' and $_ ne '..' } readdir $dh;
     my @utf8_files;
     {
         rewinddir $dh;
         use utf8::all;
-        @utf8_files = grep { $_ ne '.' and $_ ne '..' } readdir $dh;
+        @utf8_files = sort grep { $_ ne '.' and $_ ne '..' } readdir $dh;
     }
     closedir $dh;
 
-    is_deeply \@utf8_files, ["\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}", "testfile"];
-    isnt $files[0] => $utf8_files[0];
-    is   $files[1] => $utf8_files[1];
+    is_deeply \@utf8_files, [sort "\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}", "testfile"];
+    is   $files[0] => $utf8_files[0];
+    isnt $files[1] => $utf8_files[1];
 };
 
 subtest context => sub {
@@ -34,6 +35,6 @@ subtest context => sub {
     my $utf8 = readdir $dh;
     rewinddir $dh;
 
-    is $utf8 => $core;
+    is $utf8 => decode('UTF-8', $core, FB_CROAK) or diag "$utf8 : $core";
     closedir $dh;
 };
