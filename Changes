@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.009     2012-10-27
     * Don't depend on filesystem ordering [leont, GH #14]
 
 0.008     2012-10-24
