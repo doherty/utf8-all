@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+    * Don't depend on filesystem ordering [leont, GH #14]
 
 0.008     2012-10-24
     * Enable unicode_strings (see perldoc feature) [GH #2]
