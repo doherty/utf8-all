@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+    * Don't depend on localizable error strings
 
 0.009     2012-10-27
     * Don't depend on filesystem ordering [leont, GH #14]

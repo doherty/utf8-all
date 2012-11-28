@@ -26,7 +26,7 @@ subtest 'autodie first' => sub {
     is_deeply \@files, [sort "\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}", "testfile"];
 
     my $exception = exception { opendir my $no_dh, 'nonexistent' };
-    like $exception => qr/No such file or directory/;
+    like $exception => qr/^\QCan't opendir/;
 };
 
 subtest 'autodie last' => sub {
@@ -41,5 +41,5 @@ subtest 'autodie last' => sub {
     is_deeply \@files, [ sort "\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}", "testfile"];
 
     my $exception = exception { opendir my $no_dh, 'nonexistent' };
-    like $exception, qr/No such file or directory/;
+    like $exception, qr/^\QCan't opendir/;
 };
