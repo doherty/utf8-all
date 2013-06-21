@@ -2,6 +2,7 @@ Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
     * Only decode readdir entries if utf8::all is in effect [leont]
+    * Support direct dirhandles in readdir [leont]
 
 0.010     2013-02-02
     * Don't depend on localizable error strings
