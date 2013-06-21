@@ -72,14 +72,16 @@ sub _encode_argv {
 
 sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     my $handle = shift;
+    my $hints = (caller 0)[10];
     if (wantarray) {
         my @all_files  = CORE::readdir($handle);
+        return @all_files if not $hints->{'utf8::all'};
         $_ = Encode::decode('UTF-8', $_) for @all_files;
         return @all_files;
     }
     else {
         my $next_file = CORE::readdir($handle);
-        $next_file = Encode::decode('UTF-8', $next_file);
+        $next_file = Encode::decode('UTF-8', $next_file) if $hints->{'utf8::all'};
         return $next_file;
     }
 }
