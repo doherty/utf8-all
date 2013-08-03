@@ -74,7 +74,7 @@ sub _encode_argv {
 sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     my $pre_handle = shift;
     my $handle = ref($pre_handle) ? $pre_handle : qualify_to_ref($pre_handle, caller);
-    my ($package, $hints) = (caller 0)[0, 10];
+    my $hints = (caller 0)[10];
     if (wantarray) {
         my @all_files  = CORE::readdir($handle);
         return @all_files if not $hints->{'utf8::all'};
