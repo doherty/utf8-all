@@ -8,15 +8,7 @@ check_conflicts();
 
 my %module_build_args = (
   "build_requires" => {
-    "File::Find" => 0,
-    "File::Temp" => 0,
-    "Module::Build" => "0.3601",
-    "PerlIO" => 0,
-    "Test::Fatal" => 0,
-    "Test::More" => "0.96",
-    "Test::Warn" => 0,
-    "autodie" => 0,
-    "version" => "0.77"
+    "Module::Build" => "0.3601"
   },
   "configure_requires" => {
     "Dist::CheckConflicts" => "0.02",
@@ -28,7 +20,7 @@ my %module_build_args = (
     "Mike Doherty <doherty\@cpan.org>"
   ],
   "dist_name" => "utf8-all",
-  "dist_version" => "0.010",
+  "dist_version" => "0.011",
   "license" => "perl",
   "module_name" => "utf8::all",
   "recommends" => {},
@@ -37,6 +29,7 @@ my %module_build_args = (
     "Dist::CheckConflicts" => "0.02",
     "Encode" => 0,
     "Import::Into" => 0,
+    "Symbol" => 0,
     "charnames" => 0,
     "feature" => 0,
     "open" => 0,
@@ -46,9 +39,31 @@ my %module_build_args = (
     "utf8" => 0,
     "warnings" => 0
   },
-  "script_files" => []
+  "script_files" => [],
+  "test_requires" => {
+    "Capture::Tiny" => 0,
+    "PerlIO" => 0,
+    "Test::Fatal" => 0,
+    "Test::More" => "0.96",
+    "Test::Warn" => 0,
+    "autodie" => 0,
+    "version" => "0.77"
+  }
 );
 
+
+unless ( eval { Module::Build->VERSION(0.4004) } ) {
+  my $tr = delete $module_build_args{test_requires};
+  my $br = $module_build_args{build_requires};
+  for my $mod ( keys %$tr ) {
+    if ( exists $br->{$mod} ) {
+      $br->{$mod} = $tr->{$mod} if $tr->{$mod} > $br->{$mod};
+    }
+    else {
+      $br->{$mod} = $tr->{$mod};
+    }
+  }
+}
 
 my $build = Module::Build->new(%module_build_args);
 
@@ -75,6 +90,8 @@ sub check_conflicts {
 ***
 EOF
     }
+
+    return if $ENV{AUTOMATED_TESTING} || $ENV{NONINTERACTIVE_TESTING};
 
     # More or less copied from Module::Build
     return if $ENV{PERL_MM_USE_DEFAULT};

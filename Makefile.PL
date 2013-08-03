@@ -13,15 +13,7 @@ my %WriteMakefileArgs = (
   "ABSTRACT" => "turn on Unicode - all of it",
   "AUTHOR" => "Michael Schwern <mschwern\@cpan.org>, Mike Doherty <doherty\@cpan.org>",
   "BUILD_REQUIRES" => {
-    "File::Find" => 0,
-    "File::Temp" => 0,
-    "Module::Build" => "0.3601",
-    "PerlIO" => 0,
-    "Test::Fatal" => 0,
-    "Test::More" => "0.96",
-    "Test::Warn" => 0,
-    "autodie" => 0,
-    "version" => "0.77"
+    "Module::Build" => "0.3601"
   },
   "CONFIGURE_REQUIRES" => {
     "Dist::CheckConflicts" => "0.02",
@@ -35,6 +27,7 @@ my %WriteMakefileArgs = (
     "Dist::CheckConflicts" => "0.02",
     "Encode" => 0,
     "Import::Into" => 0,
+    "Symbol" => 0,
     "charnames" => 0,
     "feature" => 0,
     "open" => 0,
@@ -43,12 +36,34 @@ my %WriteMakefileArgs = (
     "utf8" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.010",
+  "TEST_REQUIRES" => {
+    "Capture::Tiny" => 0,
+    "PerlIO" => 0,
+    "Test::Fatal" => 0,
+    "Test::More" => "0.96",
+    "Test::Warn" => 0,
+    "autodie" => 0,
+    "version" => "0.77"
+  },
+  "VERSION" => "0.011",
   "test" => {
     "TESTS" => "t/*.t"
   }
 );
 
+
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
+  my $tr = delete $WriteMakefileArgs{TEST_REQUIRES};
+  my $br = $WriteMakefileArgs{BUILD_REQUIRES};
+  for my $mod ( keys %$tr ) {
+    if ( exists $br->{$mod} ) {
+      $br->{$mod} = $tr->{$mod} if $tr->{$mod} > $br->{$mod};
+    }
+    else {
+      $br->{$mod} = $tr->{$mod};
+    }
+  }
+}
 
 unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
   my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
@@ -92,6 +107,8 @@ sub check_conflicts {
 ***
 EOF
     }
+
+    return if $ENV{AUTOMATED_TESTING} || $ENV{NONINTERACTIVE_TESTING};
 
     # More or less copied from Module::Build
     return if $ENV{PERL_MM_USE_DEFAULT};
