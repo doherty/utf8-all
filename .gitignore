@@ -1,3 +1,12 @@
 utf8-all*
 .build
 *.orig
+# Ignore files created by build/make
+Build
+_build
+blib/*
+pm_to_blib
+Makefile
+Makefile.old
+MYMETA.json
+MYMETA.yml
