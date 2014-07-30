@@ -2,6 +2,13 @@ Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
 
+    * Only decode @ARGV when loaded from main package     [HayoBaan]
+    * Added wrapper for:                                  [HayoBaan]
+    * - File::Find::find, File::Find::finddepth,          [HayoBaan]
+    * - Cwd::cwd Cwd::fastcwd Cwd::getcwd Cwd::fastgetcwd [HayoBaan]
+    * - Cwd::abs_path Cwd::realpath Cwd::fast_abs_path    [HayoBaan]
+    * Other minor code chages                             [HayoBaan]
+
 0.011     2013-08-03
     * Only decode readdir entries if utf8::all is in effect [leont]
     * Support direct dirhandles in readdir [leont]
