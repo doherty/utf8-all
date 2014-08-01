@@ -103,6 +103,9 @@ sub import {
         # Replace readdir with utf8 aware version
         *{$target . '::readdir'} = \&_utf8_readdir;
 
+        # Replace glob with utf8 aware version
+        *{$target . '::glob'} = \&_utf8_glob;
+
         # Redefine find functions to be fully utf8 aware
         state $have_redefined;
         if (!$have_redefined++) {
@@ -147,6 +150,21 @@ sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
         return map { Encode::decode('UTF-8' ,$_) } CORE::readdir($handle);
     } else {
         return Encode::decode('UTF-8', CORE::readdir($handle));
+    }
+}
+
+sub _utf8_glob {
+    my $arg = $_[0]; # Making this a lexical somehow is important!
+    my $hints = (caller 0)[10];
+    if (not $hints->{'utf8::all'}) {
+        return CORE::glob($arg);
+    } else {
+        $arg = Encode::encode('UTF-8', $arg);
+        if (wantarray) {
+            return map { Encode::decode('UTF-8' ,$_) } CORE::glob($arg);
+        } else {
+            return Encode::decode('UTF-8', CORE::glob($arg));
+        }
     }
 }
 

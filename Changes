@@ -4,6 +4,7 @@ Revision history for Perl module {{$dist->name}}
 
     * Only decode @ARGV when loaded from main package     [HayoBaan]
     * Added wrapper for:                                  [HayoBaan]
+    * - glob                                              [HayoBaan]
     * - File::Find::find, File::Find::finddepth,          [HayoBaan]
     * - Cwd::cwd Cwd::fastcwd Cwd::getcwd Cwd::fastgetcwd [HayoBaan]
     * - Cwd::abs_path Cwd::realpath Cwd::fast_abs_path    [HayoBaan]
