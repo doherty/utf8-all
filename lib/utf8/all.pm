@@ -45,7 +45,7 @@ charnames are imported so C<\N{...}> sequences can be used to compile
 Unicode characters based on names. If you I<don't> want UTF-8 for a
 particular filehandle, you'll have to set C<binmode $filehandle>.
 
-Also redefines the core readdir function, File::Find::find,
+Also redefines the core readdir and glob function, File::Find::find,
 File::Find::finddepth, and the Cwd:: functions so they are fully UTF-8
 aware too.
 
