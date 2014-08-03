@@ -16,7 +16,7 @@ plan tests => 2;
 subtest utf8cwd => sub {
     plan tests => 6;
 
-    chdir("corpus/みかちゃん") or die "Can't chdir to 'corpus/みかちゃん'";
+    chdir("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}") or die "Couldn't chdir to corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}";
     my @cwdirs = (Cwd::getcwd(), Cwd::cwd(), Cwd::fastcwd());
 
     my @utf8_cwdirs;
@@ -35,7 +35,7 @@ subtest utf8cwd => sub {
 subtest utf8abs_path => sub {
     plan tests => 9;
 
-    my @abs = (Cwd::abs_path("corpus/みかちゃん"), Cwd::realpath("corpus/みかちゃん"), Cwd::fast_abs_path("corpus/みかちゃん"));
+    my @abs = (Cwd::abs_path("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"), Cwd::realpath("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"), Cwd::fast_abs_path("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"));
 
     my @utf8_abs;
     {
