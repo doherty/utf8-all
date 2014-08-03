@@ -4,7 +4,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.011
+version 0.012
 
 # SYNOPSIS
 
@@ -41,7 +41,7 @@ reason to:
 # INTERACTION WITH AUTODIE
 
 If you use [autodie](https://metacpan.org/pod/autodie), which is a great idea, you need to use at least version
-__2.12__, released on [June 26, 2012](https://metacpan.org/source/PJF/autodie-2.12/Changes#L3).
+**2.12**, released on [June 26, 2012](https://metacpan.org/source/PJF/autodie-2.12/Changes#L3).
 Otherwise, autodie obliterates the IO layers set by the [open](https://metacpan.org/pod/open) pragma. See
 [RT #54777](https://rt.cpan.org/Ticket/Display.html?id=54777) and
 [GH #7](https://github.com/doherty/utf8-all/issues/7).
