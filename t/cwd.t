@@ -1,8 +1,17 @@
 use strict;
 use warnings;
-use Test::More 0.96 tests => 2;
-use Cwd;
+use Test::More 0.96;
 use Encode qw/decode FB_CROAK/;
+use Cwd;
+
+plan skip_all => q/Can't Unicodify cwd on Windows/
+    if $^O eq 'Win32';
+
+mkdir "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"
+    or die "Couldn't create directory corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}: $!"
+    unless -d "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}";
+
+plan tests => 2;
 
 subtest utf8cwd => sub {
     plan tests => 6;

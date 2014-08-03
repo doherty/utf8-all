@@ -1,15 +1,21 @@
 use strict;
 use warnings;
-use Test::More 0.96 tests => 1;
-
-#plan skip_all => "glob not yet implemented";
-
+use Test::More 0.96;
 use Encode qw/decode FB_CROAK/;
+
+plan skip_all => q/Can't Unicodify glob on Windows/
+    if $^O eq 'Win32';
+
+mkdir "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"
+    or die "Couldn't create directory corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}: $!"
+    unless -d "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}";
+
+plan tests => 1;
 
 subtest glob => sub {
     plan tests => 14;
 
-    my @globs = (glob("corpus/*"), glob("corpus/{testfile,みかちゃん}"), <corpus/*>);
+    my @globs = (glob("corpus/*"), glob("corpus/{testfile,\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}}"), <corpus/*>);
     my $count = 0;
     while (my $glob = glob("corpus/*")) {
         push(@globs, $glob);
