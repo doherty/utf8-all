@@ -27,13 +27,27 @@ Also redefines the following functions to be UTF-8 aware:
 
 =over
 
-=item readdir
-=item glob and the < > glob operator
-=item L<File::Find::find> and L<File::Find::finddepth>
-=item L<Cwd::cwd>, L<Cwd::fastcwd>, L<Cwd::getcwd>, L<Cwd::fastgetcwd>
-=item L<Cwd::abs_path>, L<Cwd::realpath>, L<Cwd::fast_abs_path>
+=item
 
-Note: None of these functions is redefined on windows as the file
+readdir
+
+=item
+
+glob and the < > glob operator
+
+=item
+
+L<File::Find::find> and L<File::Find::finddepth>
+
+=item
+
+L<Cwd::cwd>, L<Cwd::fastcwd>, L<Cwd::getcwd>, L<Cwd::fastgetcwd>
+
+=item
+
+L<Cwd::abs_path>, L<Cwd::realpath>, L<Cwd::fast_abs_path>
+
+B<Note:> None of these functions is redefined on windows as the file
 system does not support UTF-8 filenames!
 
 =back
