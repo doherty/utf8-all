@@ -4,6 +4,8 @@ Revision history for Perl module {{$dist->name}}
   - Warn instead of bailing out of the test suite when
     autodie is old [gh-26, gh-22]
 
+  - Only decoding @ARGV when called from the main package [gh-18] [HayoBaan]
+
 0.012     2014-08-03
   - Disable wrapping readdir on Windows [gh-17]
   - Don't ship files with names that aren't portable to Windows [gh-17]
