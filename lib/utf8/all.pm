@@ -1,30 +1,8 @@
-################################################################################
-#
-# Module to turns on UTF-8 for everything:
-# * Enables utf8 and related features
-# * Imports charnames (\N{...})
-# * Specifies all IO (except DATA) to be in UTF-8
-# * Decodes @ARGV as UTF-8, when loaded from the main package
-# * Redefines frequently used functions to be fully UTF-8 compatible:
-#   - readdir,
-#   - File::Find::find, File::Find::finddepth,
-#   - Cwd::cwd Cwd::fastcwd Cwd::getcwd Cwd::fastgetcwd
-#   - Cwd::abs_path Cwd::realpath Cwd::fast_abs_path
-#
-################################################################################
-
 package utf8::all;
 
 use strict;
 use warnings;
 use 5.010; # state
-use utf8;
-
-our $VERSION = "0.012";
-
-################################################################################
-
-=encoding utf-8
 
 =head1 SYNOPSIS
 
@@ -45,9 +23,20 @@ charnames are imported so C<\N{...}> sequences can be used to compile
 Unicode characters based on names. If you I<don't> want UTF-8 for a
 particular filehandle, you'll have to set C<binmode $filehandle>.
 
-Also redefines the core readdir and glob function, File::Find::find,
-File::Find::finddepth, and the Cwd:: functions so they are fully UTF-8
-aware too.
+Also redefines the following functions to be UTF-8 aware:
+
+=over
+
+=item readdir
+=item glob and the < > glob operator
+=item L<File::Find::find> and L<File::Find::finddepth>
+=item L<Cwd::cwd>, L<Cwd::fastcwd>, L<Cwd::getcwd>, L<Cwd::fastgetcwd>
+=item L<Cwd::abs_path>, L<Cwd::realpath>, L<Cwd::fast_abs_path>
+
+Note: None of these functions is redefined on windows as the file
+system does not support UTF-8 filenames!
+
+=back
 
 The pragma is lexically-scoped, so you can do the following if you had
 some reason to:
@@ -64,9 +53,6 @@ some reason to:
     print length $text, "\n";         # 10, not 7!
 
 =cut
-
-
-################################################################################
 
 use Import::Into;
 
@@ -91,12 +77,11 @@ sub import {
     'utf8'->import::into($target);
     'open'->import::into($target, qw{:encoding(UTF-8) :std});
     'charnames'->import::into($target, qw{:full :short});
-    'warnings'->import::into($target);
     'warnings'->import::into($target, qw{FATAL utf8});
     'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
     'feature'->import::into($target, qw{unicode_eval fc}) if $^V >= v5.16.0;
 
-    {
+    unless ($^O eq 'Win32') {
         no strict qw(refs); ## no critic (TestingAndDebugging::ProhibitNoStrict)
         no warnings qw(redefine);
 
@@ -169,14 +154,16 @@ sub _utf8_glob {
 }
 
 sub _utf8_find {
-    my $ref = shift; # Wanted function or options hash
-    my %findoptionshash = ref($ref) eq "HASH" ? %$ref : ();
-    my $wanted = ref($ref) eq "HASH" ? $ref->{wanted} : $ref;
+    my $ref = shift; # This can be the wanted function or a find options hash
+    #  Make argument always into the find's options hash
+    my %find_options_hash = ref($ref) eq "HASH" ? %$ref : (wanted => $ref);
+    my $wanted = $find_options_hash{wanted}; # The original wanted function
+    # Get the hint from the caller (one level deeper if called from _utf8_finddepth)
     my $hints = ((caller 1)[3]//"") ne 'utf8::all::_utf8_finddepth' ? (caller 0)[10] : (caller 1)[10];
     if (not $hints->{'utf8::all'}) {
-        return $_org_functions{"File::Find::find"}->(\%findoptionshash, @_);
+        return $_org_functions{"File::Find::find"}->(\%find_options_hash, @_);
     } else {
-        $findoptionshash{wanted} = sub {
+        $find_options_hash{wanted} = sub {
             # Decode the file variables
             local $_                    = Encode::decode('UTF-8', $_);
             local $File::Find::name     = Encode::decode('UTF-8', $File::Find::name);
@@ -189,14 +176,12 @@ sub _utf8_find {
             local $File::Find::topnlink = Encode::decode('UTF-8', $File::Find::topnlink);
             $wanted->();
         };
-        return $_org_functions{"File::Find::find"}->(\%findoptionshash, map { Encode::encode('UTF-8', $_) } @_);
+        return $_org_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
     }
 }
 
 sub _utf8_finddepth {
-    my $ref = shift; # Wanted function or options hash
-    my $hints = (caller 0)[10];
-    my $i=0;
+    my $ref = shift; # This can be the wanted function or a find options hash
     return _utf8_find( { bydepth => 1, ref($ref) eq "HASH" ? %$ref : (wanted => $ref) }, @_);
 }
 
@@ -212,5 +197,3 @@ L<GH #7|https://github.com/doherty/utf8-all/issues/7>.
 =cut
 
 1;
-
-__END__

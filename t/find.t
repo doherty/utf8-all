@@ -1,8 +1,21 @@
 use strict;
 use warnings;
-use Test::More 0.96 tests => 2;
-use File::Find;
+use Test::More 0.96;
 use Encode qw/decode FB_CROAK/;
+use File::Find;
+
+plan skip_all => q/Can't Unicodify find on Windows/
+    if $^O eq 'Win32';
+
+mkdir "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"
+    or die "Couldn't create directory corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}: $!"
+    unless -d "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}";
+open my $touch, '>', "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}/bar"
+    or die "Couldn't open corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}/bar for writing: $!";
+close $touch
+    or die "Couldn't close corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}/bar: $!";
+
+plan tests => 2;
 
 subtest utf8find => sub {
     plan tests => 5;

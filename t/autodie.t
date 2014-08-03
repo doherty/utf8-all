@@ -4,13 +4,24 @@ use version 0.77;
 use Test::More 0.96;
 use Test::Fatal;
 
+plan skip_all => q/Can't Unicodify readdir on Windows/
+    if $^O eq 'Win32';
+
+mkdir "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"
+    or die "Couldn't create directory corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}: $!"
+    unless -d "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}";
+
 if ( eval { require autodie; 1 } ) {
-    plan skip_all => "autodie is version $autodie::VERSION, but must be greater than version 2.11"
-        if (version->parse($autodie::VERSION) < version->parse(2.11));
+    BAIL_OUT <<END_WHY
+autodie is version $autodie::VERSION, but must be greater than version 2.11.
+Please see the warning in the utf8::all documentation, and upgrade autodie to
+at least version 2.12.
+END_WHY
+        if version->parse($autodie::VERSION) <= version->parse(2.11);
     plan tests => 2;
 }
 else {
-    plan skip_all => "autodie is required for these tests";
+    plan skip_all => "autodie is required for these tests (but is not a prerequisite)";
 }
 no autodie;
 

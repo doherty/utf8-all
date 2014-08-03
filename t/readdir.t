@@ -1,7 +1,16 @@
 use strict;
 use warnings;
-use Test::More 0.96 tests => 3;
+use Test::More 0.96;
 use Encode qw/decode FB_CROAK/;
+
+plan skip_all => q/Can't Unicodify readdir on Windows/
+    if $^O eq 'Win32';
+
+mkdir "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"
+    or die "Couldn't create directory corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}: $!"
+    unless -d "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}";
+
+plan tests => 3;
 
 subtest utf8 => sub {
     plan tests => 3;
