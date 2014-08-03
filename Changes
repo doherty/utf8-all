@@ -1,45 +1,47 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+  - Disable wrapping readdir on Windows [gh-17]
+  - Don't ship files with names that aren't portable to Windows [gh-17]
 
 0.011     2013-08-03
-    * Only decode readdir entries if utf8::all is in effect [leont]
-    * Support direct dirhandles in readdir [leont]
+  - Only decode readdir entries if utf8::all is in effect [leont]
+  - Support direct dirhandles in readdir [leont]
 
 0.010     2013-02-02
-    * Don't depend on localizable error strings
+  - Don't depend on localizable error strings
 
 0.009     2012-10-27
-    * Don't depend on filesystem ordering [leont, GH #14]
+  - Don't depend on filesystem ordering [leont, GH #14]
 
 0.008     2012-10-24
-    * Enable unicode_strings (see perldoc feature) [GH #2]
-    * Enable unicode_eval (see perldoc feature) [GH #2]
-    * Enable fc (see perldoc fc) [GH #2]
-    * Wrap CORE::readdir to provide UTF-8 filenames [GH #11]
+  - Enable unicode_strings (see perldoc feature) [GH #2]
+  - Enable unicode_eval (see perldoc feature) [GH #2]
+  - Enable fc (see perldoc fc) [GH #2]
+  - Wrap CORE::readdir to provide UTF-8 filenames [GH #11]
 
 0.007     2012-08-01
-    * Use version.pm for comparing versions in the test suite
-    * Better detection of warnings in t/FATAL_utf8.t
-    * Don't fail the test suite if autodie is too old
+  - Use version.pm for comparing versions in the test suite
+  - Better detection of warnings in t/FATAL_utf8.t
+  - Don't fail the test suite if autodie is too old
 
 0.006     2012-07-29
-    * Be less strict with detecting fatal UTF-8 error in test suite [GH #12]
+  - Be less strict with detecting fatal UTF-8 error in test suite [GH #12]
 
 0.005     2012-07-29
-    * Use Import::Into instead of home-grown "solution" [GH #10]
-    * Don't permit running with autodie < 2.12, due to RT #54777 [GH #7]
-    * Promote utf8 warnings to fatal errors [GH #1]
+  - Use Import::Into instead of home-grown "solution" [GH #10]
+  - Don't permit running with autodie < 2.12, due to RT #54777 [GH #7]
+  - Promote utf8 warnings to fatal errors [GH #1]
 
 0.004     2012-01-04
-    * Fix test suite for less current versions of Perl [getty, doherty]
+  - Fix test suite for less current versions of Perl [getty, doherty]
 
 0.003     2011-12-21
-    * Internal refactoring
-    * Load charnames [sartak]
+  - Internal refactoring
+  - Load charnames [sartak]
 
 0.002     2011-04-21
-    * Expand test suite slightly
+  - Expand test suite slightly
 
 0.001     2011-04-20
-    * Split code out of perl5i
+  - Split code out of perl5i

@@ -54,7 +54,7 @@ sub import {
 
     {
         no strict qw(refs); ## no critic (TestingAndDebugging::ProhibitNoStrict)
-        *{$target . '::readdir'} = \&_utf8_readdir;
+        *{$target . '::readdir'} = \&_utf8_readdir unless $^O eq 'Win32';
     }
 
     # utf8 in @ARGV
