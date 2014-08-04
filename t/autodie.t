@@ -1,3 +1,5 @@
+#!perl
+
 use strict;
 use warnings;
 use version 0.77;
