@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+  - Skip locale tests on systems without locale support [gh-27; Hugmeir]
 
 0.013     2014-08-19
   - Warn instead of bailing out of the test suite when
