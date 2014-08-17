@@ -13,7 +13,7 @@ close $touch
     or die "Couldn't close corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}: $!";
 
 if ( eval { require autodie; 1 } ) {
-    BAIL_OUT <<END_WHY
+    diag <<END_WHY
 autodie is version $autodie::VERSION, but must be greater than version 2.11.
 Please see the warning in the utf8::all documentation, and upgrade autodie to
 at least version 2.12.

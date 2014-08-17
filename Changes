@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+  - Warn instead of bailing out of the test suite when
+    autodie is old [gh-26, gh-22]
 
 0.012     2014-08-03
   - Disable wrapping readdir on Windows [gh-17]
