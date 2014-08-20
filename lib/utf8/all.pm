@@ -60,7 +60,9 @@ sub import {
 
     # Make @ARGV utf-8 when called from the main package
     state $have_encoded_argv = 0;
-    map { $_ = Encode::decode('UTF-8' ,$_) } @ARGV if $target eq "main" && !$have_encoded_argv++;
+    if ($target eq "main" && !$have_encoded_argv++) {
+        $_ = Encode::decode('UTF-8' ,$_) for @ARGV;
+    }
 
     $^H{'utf8::all'} = 1;
 
