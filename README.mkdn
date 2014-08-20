@@ -4,7 +4,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.012
+version 0.013
 
 # SYNOPSIS
 
@@ -18,7 +18,8 @@ version 0.012
 
 [utf8](https://metacpan.org/pod/utf8) allows you to write your Perl encoded in UTF-8. That means UTF-8
 strings, variable names, and regular expressions. `utf8::all` goes further, and
-makes `@ARGV` encoded in UTF-8, and filehandles are opened with UTF-8 encoding
+makes `@ARGV` encoded in UTF-8 (only when called from the main package),
+and filehandles are opened with UTF-8 encoding
 turned on by default (including STDIN, STDOUT, STDERR), and charnames are
 imported so `\N{...}` sequences can be used to compile Unicode characters based
 on names. If you _don't_ want UTF-8 for a particular filehandle, you'll have to
