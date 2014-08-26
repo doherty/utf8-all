@@ -6,8 +6,13 @@ use 5.010; # state
 
 =head1 SYNOPSIS
 
-    use utf8::all; # Turn on UTF-8. All of it.
-    use utf8::all qw(noglob); # Turn on UTF-8, except for the glob function.
+    use utf8::all;                # Turn on UTF-8, including core readdir,
+                                  # glob, and < >
+    use utf8::all qw(:All);       # Turn on UTF-8, all of it.
+    use utf8::all qw(File::Find); # UTF-8-aware File::Find functions
+    use utf8::all qw(Cwd);        # UTF-8-aware Cwd functions
+    use utf8::all qw(no_glob);    # Turn on UTF-8, except for glob and < >
+    use utf8::all qw(no_readdir); # Turn on UTF-8, except for readdir.
 
     open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
     print length 'føø bār';             # 7 UTF-8 characters
@@ -32,31 +37,31 @@ Also redefines the following functions to be UTF-8 aware:
 
 readdir
 
-You can prevent the redefinition of this function by supplying the optional argument C<noreaddir> to the C<use utf8::all> statement.
+You can prevent the redefinition of this function by supplying the optional argument C<no_readdir> to the C<use utf8::all> statement.
 
 =item
 
 glob and the < > glob operator
 
-You can prevent the redefinition of this function by supplying the optional argument C<noglob> to the C<use utf8::all> statement.
+You can prevent the redefinition of this function by supplying the optional argument C<no_glob> to the C<use utf8::all> statement.
 
 =item
 
-L<File::Find::find> and L<File::Find::finddepth>
+L<File::Find::find> and L<File::Find::finddepth> I<(optional)>
 
-You can prevent the redefinition of these functions by supplying the optional argument C<nofind> to the C<use utf8::all> statement.
+To include redefinition of these functions, supply the argument C<File::Find> or C<:All>  to the C<use utf8::all> statement.
 
 =item
 
 L<Cwd::cwd>, L<Cwd::fastcwd>, L<Cwd::getcwd>, L<Cwd::fastgetcwd>
 
-You can prevent the redefinition of these functions by supplying the optional argument C<nocwd> to the C<use utf8::all> statement.
+To include redefinition of these functions, supply the argument C<Cwd> or C<:All>  to the C<use utf8::all> statement.
 
 =item
 
 L<Cwd::abs_path>, L<Cwd::realpath>, L<Cwd::fast_abs_path>
 
-You can prevent the redefinition of these functions by supplying the optional argument C<nocwd> to the C<use utf8::all> statement.
+To include redefinition of these functions, supply the argument C<Cwd> or C<:All> to the C<use utf8::all> statement.
 
 =back
 
@@ -95,7 +100,7 @@ sub import {
     # Check and set options
     my %options;
     shift; # First entry in @_ is always the package name itself
-    map { die qq(Invalid option "$_" to utf8::all) if $_ !~ /^no(cwd|find|readdir|glob)$/i; $options{lc($_)} = 1 } @_;
+    map { die qq(Invalid option "$_" to utf8::all) if $_ !~ /^(no_(readdir|glob)|File::Find|Cwd|:All)$/; $options{$_} = 1 } @_;
 
     # Enable features/pragmas in calling package
     my $target = caller;
@@ -111,13 +116,13 @@ sub import {
         no warnings qw(redefine);
 
         # Replace readdir with utf8 aware version
-        if (!$options{noreaddir}) {
+        if (!$options{no_readdir}) {
             *{$target . '::readdir'} = \&_utf8_readdir;
             $^H{'utf8::all::readdir'} = 1; # Set hint so we know in the redefined function we have to encode/decode
         }
 
         # Replace glob with utf8 aware version
-        if (!$options{noglob}) {
+        if (!$options{no_glob}) {
             *{$target . '::glob'} = \&_utf8_glob;
             $^H{'utf8::all::glob'} = 1; # Set hint so we know in the redefined function we have to encode/decode
         }
@@ -125,13 +130,13 @@ sub import {
         # List of redefined non-core functions
         my @redefined;
 
-        if (!$options{nocwd}) {
-            require Cwd unless $options{nocwd};
+        if ($options{Cwd} || $options{":All"}) {
+            require Cwd;
             push @redefined, qw(Cwd::cwd Cwd::fastcwd Cwd::getcwd Cwd::fastgetcwd Cwd::abs_path Cwd::realpath Cwd::fast_abs_path);
         }
 
-        if (!$options{nofind}) {
-            require File::Find unless $options{nofind};
+        if ($options{"File::Find"} || $options{":All"}) {
+            require File::Find;
             push @redefined, qw(File::Find::find File::Find::finddepth);
         }
 

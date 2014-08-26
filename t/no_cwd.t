@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Test::More 0.96;
 use Encode qw/decode FB_CROAK/;
+use Cwd;
 
 plan skip_all => q/Can't Unicodify cwd on Windows/
     if $^O eq 'Win32';
@@ -22,7 +23,7 @@ subtest notutf8cwd => sub {
 
     my @utf8_cwdirs;
     {
-        use utf8::all qw(nocwd);
+        use utf8::all;
         @utf8_cwdirs = (Cwd::getcwd(), Cwd::cwd(), Cwd::fastcwd());
     }
     for (my $i=0 ; $i<3; $i++) {
@@ -39,7 +40,7 @@ subtest notutf8abs_path => sub {
 
     my @utf8_abs;
     {
-        use utf8::all qw(nocwd);
+        use utf8::all;
         @utf8_abs = (Cwd::abs_path("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"), Cwd::realpath("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"), Cwd::fast_abs_path("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"));
     }
     for (my $i=0 ; $i<3; $i++) {
