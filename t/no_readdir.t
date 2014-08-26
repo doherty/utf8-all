@@ -23,7 +23,7 @@ subtest utf8 => sub {
     my @utf8_files;
     {
         rewinddir $dh;
-        use utf8::all qw(noreaddir);
+        use utf8::all qw(no_readdir);
         @utf8_files = sort grep { $_ ne '.' and $_ ne '..' } readdir $dh;
     }
     closedir $dh;

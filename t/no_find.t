@@ -27,7 +27,7 @@ subtest utf8find => sub {
 
     my @utf8_files;
     {
-        use utf8::all qw(nofind);
+        use utf8::all;
         File::Find::find( { no_chdir => 0, wanted => sub { push(@utf8_files, $_) if $_ !~ /\.{1,2}/ } }, 'corpus');
         @utf8_files = sort @utf8_files;
     }
@@ -47,7 +47,7 @@ subtest utf8finddepth => sub {
 
     my @utf8_files;
     {
-        use utf8::all qw(nofind);
+        use utf8::all;
         File::Find::finddepth( { no_chdir => 0, wanted => sub { push(@utf8_files, $_)  if $_ !~ /\.{1,2}/ } }, 'corpus');
         @utf8_files = sort @utf8_files;
     }

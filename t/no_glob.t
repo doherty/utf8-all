@@ -27,7 +27,7 @@ subtest glob => sub {
     my @utf8_globs;
     my $utf8_count = 0;
     {
-        use utf8::all qw(noglob);
+        use utf8::all qw(no_glob);
         @utf8_globs = (glob("corpus/*"), glob("corpus/{testfile,\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}}"), <corpus/*>);
         while (my $glob = glob("corpus/*")) {
             push(@utf8_globs, $glob);
