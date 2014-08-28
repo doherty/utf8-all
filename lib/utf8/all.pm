@@ -7,13 +7,12 @@ use 5.010; # state
 
 =head1 SYNOPSIS
 
-    use utf8::all;                # Turn on UTF-8, including core readdir,
-                                  # glob, and < >
-    use utf8::all qw(:All);       # Turn on UTF-8, all of it.
-    use utf8::all qw(File::Find); # UTF-8-aware File::Find functions
-    use utf8::all qw(Cwd);        # UTF-8-aware Cwd functions
-    use utf8::all qw(no_glob);    # Turn on UTF-8, except for glob and < >
-    use utf8::all qw(no_readdir); # Turn on UTF-8, except for readdir.
+    use utf8::all;                # Turn on UTF-8, all of it.
+
+    # Also provide UTF-8 versions of functions from...
+    use utf8::all qw(File::Find); # File::Find
+    use utf8::all qw(Cwd);        # Cwd
+    use utf8::all qw(:all);       # everything
 
     open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
     print length 'føø bār';             # 7 UTF-8 characters
@@ -22,56 +21,62 @@ use 5.010; # state
 =head1 DESCRIPTION
 
 L<utf8> allows you to write your Perl encoded in UTF-8. That means
-UTF-8 strings, variable names, and regular expressions. C<utf8::all>
-goes further, and makes C<@ARGV> encoded in UTF-8 (when C<utf8::all>
-is used from the main package), and filehandles are opened with UTF-8
-encoding turned on by default (including STDIN, STDOUT, STDERR), and
-charnames are imported so C<\N{...}> sequences can be used to compile
-Unicode characters based on names. If you I<don't> want UTF-8 for a
+UTF-8 strings, variable names, and regular expressions.
+
+C<utf8::all> goes further:
+
+=over 4
+
+=item *
+
+Makes C<@ARGV> encoded in UTF-8 (when C<utf8::all> is used from the main package).
+
+=item *
+
+Filehandles are opened with UTF-8 encoding turned on by default
+(including STDIN, STDOUT, STDERR). If you I<don't> want UTF-8 for a
 particular filehandle, you'll have to set C<binmode $filehandle>.
 
-Also redefines the following functions to be UTF-8 aware:
+=item *
 
-=over
+L<charnames> are imported so C<\N{...}> sequences can be used to compile
+Unicode characters based on names.
 
-=item
+=item *
 
-readdir
+readdir now returns UTF-8
 
-You can prevent the redefinition of this function by supplying the optional argument C<no_readdir> to the C<use utf8::all> statement.
+=item *
 
-=item
-
-glob and the < > glob operator
-
-You can prevent the redefinition of this function by supplying the optional argument C<no_glob> to the C<use utf8::all> statement.
-
-=item
-
-L<File::Find::find> and L<File::Find::finddepth> I<(optional)>
-
-To include redefinition of these functions, supply the argument C<File::Find> or C<:All>  to the C<use utf8::all> statement.
-
-=item
-
-L<Cwd::cwd>, L<Cwd::fastcwd>, L<Cwd::getcwd>, L<Cwd::fastgetcwd>
-
-To include redefinition of these functions, supply the argument C<Cwd> or C<:All>  to the C<use utf8::all> statement.
-
-=item
-
-L<Cwd::abs_path>, L<Cwd::realpath>, L<Cwd::fast_abs_path>
-
-To include redefinition of these functions, supply the argument C<Cwd> or C<:All> to the C<use utf8::all> statement.
+L<glob|perlfunc/glob> and the C<< <> >> operator
 
 =back
 
-B<Note:> None of these functions is redefined on windows as the file
-system does not support UTF-8 filenames!
+=head1 Import options
 
-B<Note:> Even if a function has been redefined, it behaves
-as normal (non UTF-8 wrapped) when called from within a module that did not
-load utf8::all/redefine the function.
+If you provide the C<File::Find> or C<Cwd> options to the
+C<use utf8::all> line, those modules are loaded if they haven't
+been already, but you will get UTF-8-ified versions instead of the
+normal ones. This effect is lexical.
+
+=over 4
+
+=item L<File::Find>
+
+C<find> and C<finddepth>
+
+=item L<Cwd>
+
+C<wd>, C<fastcwd>, C<getcwd>, C<fastgetcwd>
+
+C<abs_path>, C<realpath>, C<fast_abs_path>
+
+=back
+
+Use C<use utf8::all qw(:all)> to get all of these, plus whatever
+we dream up in the future.
+
+=head2 Lexical scope
 
 The pragma is lexically-scoped, so you can do the following if you had
 some reason to:
@@ -94,13 +99,15 @@ use parent qw(Encode charnames utf8 open warnings feature);
 use Symbol qw(qualify_to_ref);
 
 # Holds the pointers to the original version of redefined functions
-state %_org_functions;
+state %_orig_functions;
 
+my @KNOWN_OPTIONS = qw( File::Find Cwd ); # :all is a "tag"
 sub import {
-    # Check and set options
-    my %options;
-    shift; # First entry in @_ is always the package name itself
-    map { die qq(Invalid option "$_" to utf8::all) if $_ !~ /^(no_(readdir|glob)|File::Find|Cwd|:All)$/; $options{$_} = 1 } @_;
+    my %options = map { $_ => 1 } @_[1 .. $#_]; # First entry in @_ is __PACKAGE__
+    if (delete $options{':all'}) {
+        $options{$_} = 1 for @KNOWN_OPTIONS;
+    }
+    %options = %options{@KNOWN_OPTIONS}; # only keep known opts
 
     # Enable features/pragmas in calling package
     my $target = caller;
@@ -116,36 +123,35 @@ sub import {
         no warnings qw(redefine);
 
         # Replace readdir with utf8 aware version
-        if (!$options{no_readdir}) {
-            *{$target . '::readdir'} = \&_utf8_readdir;
-            $^H{'utf8::all::readdir'} = 1; # Set hint so we know in the redefined function we have to encode/decode
-        }
+        *{$target . '::readdir'} = \&_utf8_readdir;
+        $^H{'utf8::all::readdir'} = 1; # Track whether to encode/decode in the redefined function
 
         # Replace glob with utf8 aware version
-        if (!$options{no_glob}) {
-            *{$target . '::glob'} = \&_utf8_glob;
-            $^H{'utf8::all::glob'} = 1; # Set hint so we know in the redefined function we have to encode/decode
-        }
+        *{$target . '::glob'} = \&_utf8_glob;
+        $^H{'utf8::all::glob'} = 1;
 
         # List of redefined non-core functions
         my @redefined;
 
-        if ($options{Cwd} || $options{":All"}) {
+        if ($options{'Cwd'}) {
             require Cwd;
-            push @redefined, qw(Cwd::cwd Cwd::fastcwd Cwd::getcwd Cwd::fastgetcwd Cwd::abs_path Cwd::realpath Cwd::fast_abs_path);
+            push @redefined, map "Cwd::$_" => qw(
+                cwd fastcwd getcwd fastgetcwd
+                abs_path realpath fast_abs_path
+            );
         }
 
-        if ($options{"File::Find"} || $options{":All"}) {
+        if ($options{'File::Find'}) {
             require File::Find;
-            push @redefined, qw(File::Find::find File::Find::finddepth);
+            push @redefined, map "File::Find::$_" => qw(find finddepth);
         }
 
         for my $f (@redefined) {
-            $^H{"utf8::all::$f"} = 1; # Set hint so we know in the redefined functions we have to encode/decode
-            # If we already have the _org_function, we have redefined the function
+            $^H{"utf8::all::$f"} = 1;
+            # If we already have the _orig_function, we have redefined the function
             # in an earlier load of the module, so we need not do it again
-            if (!$_org_functions{$f}) {
-                $_org_functions{$f} = \&{$f};
+            unless ($_orig_functions{$f}) {
+                $_orig_functions{$f} = \&{$f};
                 if ($f =~ /^File::Find::(find|finddepth)$/) {
                     *{$f} = \&{"_utf8_$1"};
                 } else {
@@ -170,11 +176,16 @@ sub _utf8_simple_func {
     my $func = shift;
     my $hints = (caller 1)[10]; # Use caller level 1 because of the added anonymous sub around call
     if (not $hints->{"utf8::all::$func"}) {
-        return $_org_functions{$func}->(@_);
-    } elsif (wantarray) {
-        return map { Encode::decode('UTF-8' ,$_) } $_org_functions{$func}->(map { Encode::encode('UTF-8', $_) } @_);
-    } else {
-        return Encode::decode('UTF-8', $_org_functions{$func}->(map { Encode::encode('UTF-8', $_) } @_));
+        return $_orig_functions{$func}->(@_);
+    }
+    elsif (wantarray) {
+        return map { Encode::decode('UTF-8' ,$_) }
+            $_orig_functions{$func}->( map { Encode::encode('UTF-8', $_) } @_ );
+    }
+    else {
+        return Encode::decode('UTF-8',
+            $_orig_functions{$func}->(map { Encode::encode('UTF-8', $_) } @_)
+        );
     }
 }
 
@@ -214,7 +225,7 @@ sub _utf8_find {
     # Get the hint from the caller (one level deeper if called from _utf8_finddepth)
     my $hints = ((caller 1)[3]//"") ne 'utf8::all::_utf8_finddepth' ? (caller 0)[10] : (caller 1)[10];
     if (not $hints->{'utf8::all::File::Find::find'}) {
-        return $_org_functions{"File::Find::find"}->(\%find_options_hash, @_);
+        return $_orig_functions{"File::Find::find"}->(\%find_options_hash, @_);
     } else {
         $find_options_hash{wanted} = sub {
             # Decode the file variables
@@ -229,7 +240,7 @@ sub _utf8_find {
             local $File::Find::topnlink = Encode::decode('UTF-8', $File::Find::topnlink);
             $wanted->();
         };
-        return $_org_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
+        return $_orig_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
     }
 }
 

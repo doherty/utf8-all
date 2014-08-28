@@ -15,7 +15,7 @@ mkdir "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"
 
 plan tests => 2;
 
-subtest notutf8cwd => sub {
+subtest 'No UTF8 Cwd::cwd' => sub {
     plan tests => 3;
 
     chdir("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}") or die "Couldn't chdir to corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}";
@@ -33,7 +33,7 @@ subtest notutf8cwd => sub {
     chdir("../..") or die "Can't chdir back to original dir";
 };
 
-subtest notutf8abs_path => sub {
+subtest 'No UTF8 Cwd::abs_path' => sub {
     plan tests => 3;
 
     my @abs = (Cwd::abs_path("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"), Cwd::realpath("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"), Cwd::fast_abs_path("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"));

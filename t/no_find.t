@@ -18,7 +18,7 @@ close $touch
 
 plan tests => 2;
 
-subtest utf8find => sub {
+subtest 'No UTF8 File::Find::find' => sub {
     plan tests => 4;
 
     my @files;
@@ -38,7 +38,7 @@ subtest utf8find => sub {
     }
 };
 
-subtest utf8finddepth => sub {
+subtest 'No UTF8 File::Fine::finddepth' => sub {
     plan tests => 4;
 
     my @files;
