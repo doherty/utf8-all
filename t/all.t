@@ -28,7 +28,7 @@ subtest utf8find => sub {
 
     my @utf8_files;
     {
-        use utf8::all qw(:All);
+        use utf8::all qw(:all);
         File::Find::find( { no_chdir => 0, wanted => sub { push(@utf8_files, $_) if $_ !~ /\.{1,2}/ } }, 'corpus');
         @utf8_files = sort @utf8_files;
     }
@@ -49,7 +49,7 @@ subtest utf8finddepth => sub {
 
     my @utf8_files;
     {
-        use utf8::all qw(:All);
+        use utf8::all qw(:all);
         File::Find::finddepth( { no_chdir => 0, wanted => sub { push(@utf8_files, $_)  if $_ !~ /\.{1,2}/ } }, 'corpus');
         @utf8_files = sort @utf8_files;
     }
@@ -69,7 +69,7 @@ subtest utf8cwd => sub {
 
     my @utf8_cwdirs;
     {
-        use utf8::all qw(:All);
+        use utf8::all qw(:all);
         @utf8_cwdirs = (Cwd::getcwd(), Cwd::cwd(), Cwd::fastcwd());
     }
     for (my $i=0 ; $i<3; $i++) {
@@ -87,7 +87,7 @@ subtest utf8abs_path => sub {
 
     my @utf8_abs;
     {
-        use utf8::all qw(:All);
+        use utf8::all qw(:all);
         @utf8_abs = (Cwd::abs_path("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"), Cwd::realpath("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"), Cwd::fast_abs_path("corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"));
     }
     for (my $i=0 ; $i<3; $i++) {
