@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.014     2014-08-27
   - Skip locale tests on systems without locale support [gh-27; Hugmeir]
 
 0.013     2014-08-19
