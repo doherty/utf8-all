@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.015     2014-08-28
   - Fixed changelog for 0.014
   - Removed overly optimistic use of v5.20.0 syntax
 

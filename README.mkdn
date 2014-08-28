@@ -4,7 +4,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.014
+version 0.015
 
 # SYNOPSIS
 
@@ -48,7 +48,7 @@ normal ones. This effect is lexical.
 
 - [Cwd](https://metacpan.org/pod/Cwd)
 
-    `wd`, `fastcwd`, `getcwd`, `fastgetcwd`
+    `cwd`, `fastcwd`, `getcwd`, `fastgetcwd`
 
     `abs_path`, `realpath`, `fast_abs_path`
 
