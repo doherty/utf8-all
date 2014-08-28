@@ -1,3 +1,5 @@
+#!perl
+
 use strict;
 use warnings;
 use version 0.77;
@@ -7,10 +9,9 @@ use Test::Fatal;
 plan skip_all => q/Can't Unicodify readdir on Windows/
     if $^O eq 'Win32';
 
-open my $touch, '>', "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"
-    or die "Couldn't open corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093} for writing: $!";
-close $touch
-    or die "Couldn't close corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}: $!";
+mkdir "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"
+    or die "Couldn't create directory corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}: $!"
+    unless -d "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}";
 
 if ( eval { require autodie; 1 } ) {
     diag <<END_WHY
