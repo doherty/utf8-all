@@ -19,13 +19,15 @@ my %module_build_args = (
     "Mike Doherty <doherty\@cpan.org>"
   ],
   "dist_name" => "utf8-all",
-  "dist_version" => "0.013",
+  "dist_version" => "0.014",
   "license" => "perl",
   "module_name" => "utf8::all",
   "recommends" => {},
   "recursive_test_files" => 1,
   "requires" => {
+    "Cwd" => 0,
     "Encode" => 0,
+    "File::Find" => 0,
     "Import::Into" => 0,
     "Symbol" => 0,
     "charnames" => 0,
@@ -47,6 +49,7 @@ my %module_build_args = (
     "Test::More" => "0.96",
     "Test::Warn" => 0,
     "autodie" => 0,
+    "constant" => 0,
     "version" => "0.77"
   }
 );
@@ -62,6 +65,7 @@ my %fallback_build_requires = (
   "Test::More" => "0.96",
   "Test::Warn" => 0,
   "autodie" => 0,
+  "constant" => 0,
   "version" => "0.77"
 );
 

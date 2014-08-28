@@ -2,25 +2,57 @@ NAME
     utf8::all - turn on Unicode - all of it
 
 VERSION
-    version 0.013
+    version 0.014
 
 SYNOPSIS
-        use utf8::all; # Turn on UTF-8. All of it.
+        use utf8::all;                # Turn on UTF-8, all of it.
+
+        # Also provide UTF-8 versions of functions from...
+        use utf8::all qw(File::Find); # File::Find
+        use utf8::all qw(Cwd);        # Cwd
+        use utf8::all qw(:all);       # everything
 
         open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
         print length 'føø bār';             # 7 UTF-8 characters
-        my $utf8_arg = shift @ARGV;         # @ARGV is UTF-8 too!
+        my $utf8_arg = shift @ARGV;         # @ARGV is UTF-8 too (only for main)
 
 DESCRIPTION
     utf8 allows you to write your Perl encoded in UTF-8. That means UTF-8
-    strings, variable names, and regular expressions. "utf8::all" goes
-    further, and makes @ARGV encoded in UTF-8 (only when called from the
-    main package), and filehandles are opened with UTF-8 encoding turned on
-    by default (including STDIN, STDOUT, STDERR), and charnames are imported
-    so "\N{...}" sequences can be used to compile Unicode characters based
-    on names. If you *don't* want UTF-8 for a particular filehandle, you'll
-    have to set "binmode $filehandle".
+    strings, variable names, and regular expressions.
 
+    "utf8::all" goes further:
+
+    *   Makes @ARGV encoded in UTF-8 (when "utf8::all" is used from the main
+        package).
+
+    *   Filehandles are opened with UTF-8 encoding turned on by default
+        (including STDIN, STDOUT, STDERR). If you *don't* want UTF-8 for a
+        particular filehandle, you'll have to set "binmode $filehandle".
+
+    *   charnames are imported so "\N{...}" sequences can be used to compile
+        Unicode characters based on names.
+
+    *   readdir now returns UTF-8
+
+    *   glob and the "<>" operator
+
+Import options
+    If you provide the "File::Find" or "Cwd" options to the "use utf8::all"
+    line, those modules are loaded if they haven't been already, but you
+    will get UTF-8-ified versions instead of the normal ones. This effect is
+    lexical.
+
+    File::Find
+        "find" and "finddepth"
+
+    Cwd "wd", "fastcwd", "getcwd", "fastgetcwd"
+
+        "abs_path", "realpath", "fast_abs_path"
+
+    Use "use utf8::all qw(:all)" to get all of these, plus whatever we dream
+    up in the future.
+
+  Lexical scope
     The pragma is lexically-scoped, so you can do the following if you had
     some reason to:
 

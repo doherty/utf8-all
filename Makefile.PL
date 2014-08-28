@@ -23,7 +23,9 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "NAME" => "utf8::all",
   "PREREQ_PM" => {
+    "Cwd" => 0,
     "Encode" => 0,
+    "File::Find" => 0,
     "Import::Into" => 0,
     "Symbol" => 0,
     "charnames" => 0,
@@ -43,9 +45,10 @@ my %WriteMakefileArgs = (
     "Test::More" => "0.96",
     "Test::Warn" => 0,
     "autodie" => 0,
+    "constant" => 0,
     "version" => "0.77"
   },
-  "VERSION" => "0.013",
+  "VERSION" => "0.014",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -53,7 +56,9 @@ my %WriteMakefileArgs = (
 
 
 my %FallbackPrereqs = (
+  "Cwd" => 0,
   "Encode" => 0,
+  "File::Find" => 0,
   "File::Spec" => 0,
   "IO::Handle" => 0,
   "IPC::Open3" => 0,
@@ -66,6 +71,7 @@ my %FallbackPrereqs = (
   "Test::Warn" => 0,
   "autodie" => 0,
   "charnames" => 0,
+  "constant" => 0,
   "feature" => 0,
   "open" => 0,
   "parent" => 0,
