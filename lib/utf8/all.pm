@@ -67,7 +67,7 @@ C<find> and C<finddepth>
 
 =item L<Cwd>
 
-C<wd>, C<fastcwd>, C<getcwd>, C<fastgetcwd>
+C<cwd>, C<fastcwd>, C<getcwd>, C<fastgetcwd>
 
 C<abs_path>, C<realpath>, C<fast_abs_path>
 
