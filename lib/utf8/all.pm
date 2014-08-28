@@ -107,7 +107,11 @@ sub import {
     if (delete $options{':all'}) {
         $options{$_} = 1 for @KNOWN_OPTIONS;
     }
-    %options = %options{@KNOWN_OPTIONS}; # only keep known opts
+    # only keep known opts
+    foreach my $opt (keys %options) {
+        delete $options{$opt}
+            unless grep { $opt eq $_ } @KNOWN_OPTIONS
+    }
 
     # Enable features/pragmas in calling package
     my $target = caller;

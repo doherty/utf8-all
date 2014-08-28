@@ -1,24 +1,21 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+  - Fixed changelog for 0.014
+  - Removed overly optimistic use of v5.20.0 syntax
 
 0.014     2014-08-27
   - Skip locale tests on systems without locale support [gh-27; Hugmeir]
-
-0.013     2014-08-19
-  - Warn instead of bailing out of the test suite when
-    autodie is old [gh-26, gh-22]
-  - Only decoding @ARGV when called from the main package [gh-18] [HayoBaan]
-
-  - Only decode @ARGV when loaded from main package [GH#18] [HayoBaan]
   - Added wrapper for:                                      [HayoBaan]
     - glob                                                  [HayoBaan]
     - File::Find::find, File::Find::finddepth,              [HayoBaan]
     - Cwd::cwd Cwd::fastcwd Cwd::getcwd Cwd::fastgetcwd     [HayoBaan]
     - Cwd::abs_path Cwd::realpath Cwd::fast_abs_path        [HayoBaan]
-  - Added options to utf8::all to prevent redefinition:     [HayoBaan]
-    - nocwd, nofind, noglob, noreaddir                      [HayoBaan]
-    - e.g. use utf8::all qw(nofind);                        [HayoBaan]
+
+0.013     2014-08-19
+  - Warn instead of bailing out of the test suite when
+    autodie is old [gh-26, gh-22]
+  - Only decoding @ARGV when called from the main package [gh-18] [HayoBaan]
 
 0.012     2014-08-03
   - Disable wrapping readdir on Windows [gh-17]
