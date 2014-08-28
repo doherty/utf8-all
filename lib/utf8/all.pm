@@ -107,7 +107,8 @@ sub import {
     if (delete $options{':all'}) {
         $options{$_} = 1 for @KNOWN_OPTIONS;
     }
-    %options = %options{@KNOWN_OPTIONS}; # only keep known opts
+    # Only keep known opts
+    for my $o (keys %options) { delete $options{$o} unless grep { /$o/ } @KNOWN_OPTIONS }
 
     # Enable features/pragmas in calling package
     my $target = caller;
