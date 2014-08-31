@@ -2,7 +2,7 @@ NAME
     utf8::all - turn on Unicode - all of it
 
 VERSION
-    version 0.014
+    version 0.015
 
 SYNOPSIS
         use utf8::all;                # Turn on UTF-8, all of it.
@@ -45,7 +45,7 @@ Import options
     File::Find
         "find" and "finddepth"
 
-    Cwd "wd", "fastcwd", "getcwd", "fastgetcwd"
+    Cwd "cwd", "fastcwd", "getcwd", "fastgetcwd"
 
         "abs_path", "realpath", "fast_abs_path"
 

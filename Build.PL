@@ -19,7 +19,7 @@ my %module_build_args = (
     "Mike Doherty <doherty\@cpan.org>"
   ],
   "dist_name" => "utf8-all",
-  "dist_version" => "0.014",
+  "dist_version" => "0.015",
   "license" => "perl",
   "module_name" => "utf8::all",
   "recommends" => {},
