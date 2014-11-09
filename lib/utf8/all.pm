@@ -2,6 +2,7 @@ package utf8::all;
 use strict;
 use warnings;
 use 5.010; # state
+
 # ABSTRACT: turn on Unicode - all of it
 # VERSION
 
@@ -222,29 +223,51 @@ sub _utf8_glob {
 }
 
 sub _utf8_find {
+    use File::Find;
+
     my $ref = shift; # This can be the wanted function or a find options hash
     #  Make argument always into the find's options hash
     my %find_options_hash = ref($ref) eq "HASH" ? %$ref : (wanted => $ref);
-    my $wanted = $find_options_hash{wanted}; # The original wanted function
+
+    # Save original processors
+    my %org_proc;
+    for my $proc ("wanted", "preprocess", "postprocess") { $org_proc{$proc} = $find_options_hash{$proc}; }
+
     # Get the hint from the caller (one level deeper if called from _utf8_finddepth)
     my $hints = ((caller 1)[3]//"") ne 'utf8::all::_utf8_finddepth' ? (caller 0)[10] : (caller 1)[10];
     if (not $hints->{'utf8::all::File::Find::find'}) {
-        return $_orig_functions{"File::Find::find"}->(\%find_options_hash, @_);
+        # Use original function if we're not using utf8::all in calling package
+        if (warnings::enabled("File::Find")) {
+            return $_orig_functions{"File::Find::find"}->(\%find_options_hash, @_);
+        } else {
+            no warnings "File::Find"; # Turn off the warnings for File::Find if not enabled by caller
+            return $_orig_functions{"File::Find::find"}->(\%find_options_hash, @_);            
+        }
     } else {
-        $find_options_hash{wanted} = sub {
-            # Decode the file variables
-            local $_                    = Encode::decode('UTF-8', $_);
-            local $File::Find::name     = Encode::decode('UTF-8', $File::Find::name);
-            local $File::Find::dir      = Encode::decode('UTF-8', $File::Find::dir);
-            local $File::Find::fullname = Encode::decode('UTF-8', $File::Find::fullname);
-            local $File::Find::topdir   = Encode::decode('UTF-8', $File::Find::topdir);
-            local $File::Find::topdev   = Encode::decode('UTF-8', $File::Find::topdev);
-            local $File::Find::topino   = Encode::decode('UTF-8', $File::Find::topino);
-            local $File::Find::topmode  = Encode::decode('UTF-8', $File::Find::topmode);
-            local $File::Find::topnlink = Encode::decode('UTF-8', $File::Find::topnlink);
-            $wanted->();
-        };
-        return $_orig_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
+        # Override processors with utf8-aware versions
+        for my $proc ("wanted", "preprocess", "postprocess") {
+            if (defined $org_proc{$proc} && ref $org_proc{$proc}) {
+                $find_options_hash{$proc} = sub {
+                    # Decode the file variables
+                    local $_                    = Encode::decode('UTF-8', $_);
+                    local $File::Find::name     = Encode::decode('UTF-8', $File::Find::name);
+                    local $File::Find::dir      = Encode::decode('UTF-8', $File::Find::dir);
+                    local $File::Find::fullname = Encode::decode('UTF-8', $File::Find::fullname);
+                    local $File::Find::topdir   = Encode::decode('UTF-8', $File::Find::topdir);
+                    local $File::Find::topdev   = Encode::decode('UTF-8', $File::Find::topdev);
+                    local $File::Find::topino   = Encode::decode('UTF-8', $File::Find::topino);
+                    local $File::Find::topmode  = Encode::decode('UTF-8', $File::Find::topmode);
+                    local $File::Find::topnlink = Encode::decode('UTF-8', $File::Find::topnlink);
+                    $org_proc{$proc}->(@_);
+                };
+            }
+        }
+        if (warnings::enabled("File::Find")) {
+            return $_orig_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
+        } else {
+            no warnings 'File::Find'; # Turn off the warnings for File::Find if not enabled by caller
+            return $_orig_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
+        }
     }
 }
 
