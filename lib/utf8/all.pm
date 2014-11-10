@@ -223,8 +223,6 @@ sub _utf8_glob {
 }
 
 sub _utf8_find {
-    use File::Find;
-
     my $ref = shift; # This can be the wanted function or a find options hash
     #  Make argument always into the find's options hash
     my %find_options_hash = ref($ref) eq "HASH" ? %$ref : (wanted => $ref);
@@ -237,12 +235,8 @@ sub _utf8_find {
     my $hints = ((caller 1)[3]//"") ne 'utf8::all::_utf8_finddepth' ? (caller 0)[10] : (caller 1)[10];
     if (not $hints->{'utf8::all::File::Find::find'}) {
         # Use original function if we're not using utf8::all in calling package
-        if (warnings::enabled("File::Find")) {
-            return $_orig_functions{"File::Find::find"}->(\%find_options_hash, @_);
-        } else {
-            no warnings "File::Find"; # Turn off the warnings for File::Find if not enabled by caller
-            return $_orig_functions{"File::Find::find"}->(\%find_options_hash, @_);            
-        }
+        eval 'no warnings "File::Find";' if !warnings::enabled("File::Find");
+        return $_orig_functions{"File::Find::find"}->(\%find_options_hash, @_);
     } else {
         # Override processors with utf8-aware versions
         for my $proc ("wanted", "preprocess", "postprocess") {
@@ -262,12 +256,8 @@ sub _utf8_find {
                 };
             }
         }
-        if (warnings::enabled("File::Find")) {
-            return $_orig_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
-        } else {
-            no warnings 'File::Find'; # Turn off the warnings for File::Find if not enabled by caller
-            return $_orig_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
-        }
+        eval 'no warnings "File::Find";' if !warnings::enabled("File::Find");
+        return $_orig_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
     }
 }
 
