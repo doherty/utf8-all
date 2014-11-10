@@ -2,6 +2,9 @@ Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
 
+  - Added wrapper for File::Find's preprocess and postprocess [HayoBaan]
+  - Honour File::Find's warnings status                       [HayoBaan]
+
 0.015     2014-08-28
   - Fixed changelog for 0.014
   - Removed overly optimistic use of v5.20.0 syntax
