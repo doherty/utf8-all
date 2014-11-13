@@ -163,6 +163,11 @@ sub import {
                     *{$f} = sub { return _utf8_simple_func($f, @_); };
                 }
             }
+            # Make sure unspecified (exported) function gets overriden in the
+            # calling package. This will allow access to e.g. "File::Find::find"
+            # as "find" in one's code
+            (my $ff = $f) =~ s/.*:://;
+            *{$target . "::" .$ff} = *{$f};
         }
     }
 
