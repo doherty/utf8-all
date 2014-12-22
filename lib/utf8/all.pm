@@ -10,11 +10,6 @@ use 5.010; # state
 
     use utf8::all;                # Turn on UTF-8, all of it.
 
-    # Also provide UTF-8 versions of functions from...
-    use utf8::all qw(File::Find); # File::Find
-    use utf8::all qw(Cwd);        # Cwd
-    use utf8::all qw(:all);       # everything
-
     open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
     print length 'føø bār';             # 7 UTF-8 characters
     my $utf8_arg = shift @ARGV;         # @ARGV is UTF-8 too (only for main)
@@ -53,30 +48,6 @@ L<glob|perlfunc/glob> and the C<< <> >> operator
 
 =back
 
-=head1 Import options
-
-If you provide the C<File::Find> or C<Cwd> options to the
-C<use utf8::all> line, those modules are loaded if they haven't
-been already, but you will get UTF-8-ified versions instead of the
-normal ones. This effect is lexical.
-
-=over 4
-
-=item L<File::Find>
-
-C<find> and C<finddepth>
-
-=item L<Cwd>
-
-C<cwd>, C<fastcwd>, C<getcwd>, C<fastgetcwd>
-
-C<abs_path>, C<realpath>, C<fast_abs_path>
-
-=back
-
-Use C<use utf8::all qw(:all)> to get all of these, plus whatever
-we dream up in the future.
-
 =head2 Lexical scope
 
 The pragma is lexically-scoped, so you can do the following if you had
@@ -93,6 +64,20 @@ some reason to:
     my $text = do { local $/; <$in>};
     print length $text, "\n";         # 10, not 7!
 
+=head1 SEE ALSO
+
+=over 4
+
+=item *
+
+L<File::Find::utf8> for fully utf-8 aware File::Find functions.
+
+=item *
+
+L<Cwd::utf8> for fully utf-8 aware Cwd functions.
+
+=back
+
 =cut
 
 use Import::Into;
@@ -102,18 +87,7 @@ use Symbol qw(qualify_to_ref);
 # Holds the pointers to the original version of redefined functions
 state %_orig_functions;
 
-my @KNOWN_OPTIONS = qw( File::Find Cwd ); # :all is a "tag"
 sub import {
-    my %options = map { $_ => 1 } @_[1 .. $#_]; # First entry in @_ is __PACKAGE__
-    if (delete $options{':all'}) {
-        $options{$_} = 1 for @KNOWN_OPTIONS;
-    }
-    # only keep known opts
-    foreach my $opt (keys %options) {
-        delete $options{$opt}
-            unless grep { $opt eq $_ } @KNOWN_OPTIONS
-    }
-
     # Enable features/pragmas in calling package
     my $target = caller;
     'utf8'->import::into($target);
@@ -134,41 +108,6 @@ sub import {
         # Replace glob with utf8 aware version
         *{$target . '::glob'} = \&_utf8_glob;
         $^H{'utf8::all::glob'} = 1;
-
-        # List of redefined non-core functions
-        my @redefined;
-
-        if ($options{'Cwd'}) {
-            require Cwd;
-            push @redefined, map "Cwd::$_" => qw(
-                cwd fastcwd getcwd fastgetcwd
-                abs_path realpath fast_abs_path
-            );
-        }
-
-        if ($options{'File::Find'}) {
-            require File::Find;
-            push @redefined, map "File::Find::$_" => qw(find finddepth);
-        }
-
-        for my $f (@redefined) {
-            $^H{"utf8::all::$f"} = 1;
-            # If we already have the _orig_function, we have redefined the function
-            # in an earlier load of the module, so we need not do it again
-            unless ($_orig_functions{$f}) {
-                $_orig_functions{$f} = \&{$f};
-                if ($f =~ /^File::Find::(find|finddepth)$/) {
-                    *{$f} = \&{"_utf8_$1"};
-                } else {
-                    *{$f} = sub { return _utf8_simple_func($f, @_); };
-                }
-            }
-            # Make sure unspecified (exported) function gets overriden in the
-            # calling package. This will allow access to e.g. "File::Find::find"
-            # as "find" in one's code
-            (my $ff = $f) =~ s/.*:://;
-            *{$target . "::" .$ff} = *{$f};
-        }
     }
 
     # Make @ARGV utf-8 when called from the main package
@@ -180,23 +119,6 @@ sub import {
     $^H{'utf8::all'} = 1;
 
     return;
-}
-
-sub _utf8_simple_func {
-    my $func = shift;
-    my $hints = (caller 1)[10]; # Use caller level 1 because of the added anonymous sub around call
-    if (not $hints->{"utf8::all::$func"}) {
-        return $_orig_functions{$func}->(@_);
-    }
-    elsif (wantarray) {
-        return map { Encode::decode('UTF-8' ,$_) }
-            $_orig_functions{$func}->( map { Encode::encode('UTF-8', $_) } @_ );
-    }
-    else {
-        return Encode::decode('UTF-8',
-            $_orig_functions{$func}->(map { Encode::encode('UTF-8', $_) } @_)
-        );
-    }
 }
 
 sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
@@ -226,51 +148,6 @@ sub _utf8_glob {
         }
     }
 }
-
-sub _utf8_find {
-    my $ref = shift; # This can be the wanted function or a find options hash
-    #  Make argument always into the find's options hash
-    my %find_options_hash = ref($ref) eq "HASH" ? %$ref : (wanted => $ref);
-
-    # Save original processors
-    my %org_proc;
-    for my $proc ("wanted", "preprocess", "postprocess") { $org_proc{$proc} = $find_options_hash{$proc}; }
-
-    # Get the hint from the caller (one level deeper if called from _utf8_finddepth)
-    my $hints = ((caller 1)[3]//"") ne 'utf8::all::_utf8_finddepth' ? (caller 0)[10] : (caller 1)[10];
-    if (not $hints->{'utf8::all::File::Find::find'}) {
-        # Use original function if we're not using utf8::all in calling package
-        eval 'no warnings "File::Find";' if !warnings::enabled("File::Find");
-        return $_orig_functions{"File::Find::find"}->(\%find_options_hash, @_);
-    } else {
-        # Override processors with utf8-aware versions
-        for my $proc ("wanted", "preprocess", "postprocess") {
-            if (defined $org_proc{$proc} && ref $org_proc{$proc}) {
-                $find_options_hash{$proc} = sub {
-                    # Decode the file variables
-                    local $_                    = Encode::decode('UTF-8', $_);
-                    local $File::Find::name     = Encode::decode('UTF-8', $File::Find::name);
-                    local $File::Find::dir      = Encode::decode('UTF-8', $File::Find::dir);
-                    local $File::Find::fullname = Encode::decode('UTF-8', $File::Find::fullname);
-                    local $File::Find::topdir   = Encode::decode('UTF-8', $File::Find::topdir);
-                    local $File::Find::topdev   = Encode::decode('UTF-8', $File::Find::topdev);
-                    local $File::Find::topino   = Encode::decode('UTF-8', $File::Find::topino);
-                    local $File::Find::topmode  = Encode::decode('UTF-8', $File::Find::topmode);
-                    local $File::Find::topnlink = Encode::decode('UTF-8', $File::Find::topnlink);
-                    $org_proc{$proc}->(@_);
-                };
-            }
-        }
-        eval 'no warnings "File::Find";' if !warnings::enabled("File::Find");
-        return $_orig_functions{"File::Find::find"}->(\%find_options_hash, map { Encode::encode('UTF-8', $_) } @_);
-    }
-}
-
-sub _utf8_finddepth {
-    my $ref = shift; # This can be the wanted function or a find options hash
-    return _utf8_find( { bydepth => 1, ref($ref) eq "HASH" ? %$ref : (wanted => $ref) }, @_);
-}
-
 
 =head1 INTERACTION WITH AUTODIE
 

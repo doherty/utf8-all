@@ -1,10 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
-
-  - Added wrapper for File::Find's preprocess and postprocess [HayoBaan]
-  - Honour File::Find's warnings status                       [HayoBaan]
-  - Also overriding unspecified find and cwd functions        [HayoBaan]
+  - Moved utf-8 aware implementation of File::Find and Cwd to their
+    own module (File::Find::utf8 and Cwd::utf8)           [HayoBaan]
 
 0.015     2014-08-28
   - Fixed changelog for 0.014
