@@ -110,10 +110,15 @@ sub import {
         $^H{'utf8::all::glob'} = 1;
     }
 
-    # Make @ARGV utf-8 when called from the main package
-    state $have_encoded_argv = 0;
-    if ($target eq 'main' && !$have_encoded_argv++) {
-        $_ = Encode::decode('UTF-8' ,$_) for @ARGV;
+    # Make @ARGV utf-8 when called from the main package, unless perl was launched
+    # with the -CA flag as this already has @ARGV decoded automatically.
+    # -CA is active if the the fifth bit (32) of the ${^UNICODE} variable is set.
+    # (see perlrun on the -C command switch for details about ${^UNICODE})
+    if (!(${^UNICODE} & 32)) {
+        state $have_encoded_argv = 0;
+        if ($target eq 'main' && !$have_encoded_argv++) {
+            $_ = Encode::decode('UTF-8' ,$_) for @ARGV;
+        }
     }
 
     $^H{'utf8::all'} = 1;
