@@ -97,7 +97,7 @@ sub import {
     'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
     'feature'->import::into($target, qw{unicode_eval fc}) if $^V >= v5.16.0;
 
-    unless ($^O eq 'Win32') {
+    unless ($^O eq 'dos' or $^O eq 'os2') {
         no strict qw(refs); ## no critic (TestingAndDebugging::ProhibitNoStrict)
         no warnings qw(redefine);
 
