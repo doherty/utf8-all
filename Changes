@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+  - Not decoding @ARGV when perl is run with -CA   [gh-32; HayoBaan]
+    Thank you [saulery] for the tip!
   - Allowing Win32 platform                               [HayoBaan]
   - Excluding DOS and OS/2 platforms                      [HayoBaan]
   - Moved utf-8 aware implementation of File::Find and Cwd to their
