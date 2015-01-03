@@ -40,11 +40,12 @@ Unicode characters based on names.
 
 =item *
 
-readdir now returns UTF-8
+readdir now returns UTF-8 characters instead of bytes.
 
 =item *
 
-L<glob|perlfunc/glob> and the C<< <> >> operator
+L<glob|perlfunc/glob> and the C<< <> >> operator now return UTF-8
+characters instead of bytes.
 
 =back
 
@@ -63,6 +64,12 @@ some reason to:
     open my $in, '<', 'outfile';      # in as raw
     my $text = do { local $/; <$in>};
     print length $text, "\n";         # 10, not 7!
+
+=head1 COMPATIBILITY
+
+The filesystems of Dos, Windows, and OS/2 do not (fully) support
+UTF-8. The C<readdir> function and C<glob> operators will therefore not
+be replaced on these systems.
 
 =head1 SEE ALSO
 
@@ -97,7 +104,7 @@ sub import {
     'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
     'feature'->import::into($target, qw{unicode_eval fc}) if $^V >= v5.16.0;
 
-    unless ($^O eq 'dos' or $^O eq 'os2') {
+    unless ($^O =~ /MSWin32|cygwin|dos|os2/) {
         no strict qw(refs); ## no critic (TestingAndDebugging::ProhibitNoStrict)
         no warnings qw(redefine);
 
