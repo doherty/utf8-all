@@ -4,16 +4,11 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.015
+version 0.016
 
 # SYNOPSIS
 
     use utf8::all;                # Turn on UTF-8, all of it.
-
-    # Also provide UTF-8 versions of functions from...
-    use utf8::all qw(File::Find); # File::Find
-    use utf8::all qw(Cwd);        # Cwd
-    use utf8::all qw(:all);       # everything
 
     open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
     print length 'føø bār';             # 7 UTF-8 characters
@@ -32,28 +27,9 @@ UTF-8 strings, variable names, and regular expressions.
 particular filehandle, you'll have to set `binmode $filehandle`.
 - [charnames](https://metacpan.org/pod/charnames) are imported so `\N{...}` sequences can be used to compile
 Unicode characters based on names.
-- readdir now returns UTF-8
-- [glob](https://metacpan.org/pod/perlfunc#glob) and the `<>` operator
-
-# Import options
-
-If you provide the `File::Find` or `Cwd` options to the
-`use utf8::all` line, those modules are loaded if they haven't
-been already, but you will get UTF-8-ified versions instead of the
-normal ones. This effect is lexical.
-
-- [File::Find](https://metacpan.org/pod/File::Find)
-
-    `find` and `finddepth`
-
-- [Cwd](https://metacpan.org/pod/Cwd)
-
-    `cwd`, `fastcwd`, `getcwd`, `fastgetcwd`
-
-    `abs_path`, `realpath`, `fast_abs_path`
-
-Use `use utf8::all qw(:all)` to get all of these, plus whatever
-we dream up in the future.
+- readdir now returns UTF-8 characters instead of bytes.
+- [glob](https://metacpan.org/pod/perlfunc#glob) and the `<>` operator now return UTF-8
+characters instead of bytes.
 
 ## Lexical scope
 
@@ -70,6 +46,11 @@ some reason to:
     open my $in, '<', 'outfile';      # in as raw
     my $text = do { local $/; <$in>};
     print length $text, "\n";         # 10, not 7!
+
+# SEE ALSO
+
+- [File::Find::utf8](https://metacpan.org/pod/File::Find::utf8) for fully utf-8 aware File::Find functions.
+- [Cwd::utf8](https://metacpan.org/pod/Cwd::utf8) for fully utf-8 aware Cwd functions.
 
 # INTERACTION WITH AUTODIE
 
@@ -96,6 +77,12 @@ and may be cloned from [git://github.com/doherty/utf8-all.git](git://github.com/
 
 You can make new bug reports, and view existing ones, through the
 web interface at [https://github.com/doherty/utf8-all/issues](https://github.com/doherty/utf8-all/issues).
+
+# COMPATIBILITY
+
+The filesystems of Dos, Windows, and OS/2 do not (fully) support
+UTF-8. The `readdir` function and `glob` operators will therefore not
+be replaced on these systems.
 
 # AUTHORS
 
