@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.016     2015-01-08
   - Not decoding @ARGV when perl is run with -CA   [gh-32; HayoBaan]
     Thank you [saulery] for the tip!
   - Fixed exclusion of Windows platform                   [HayoBaan]
