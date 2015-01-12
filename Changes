@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+   - Added wrapper for readlink [gh-21; HayoBaan]
 
 0.016     2015-01-08
   - Not decoding @ARGV when perl is run with -CA   [gh-32; HayoBaan]

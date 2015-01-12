@@ -40,11 +40,15 @@ Unicode characters based on names.
 
 =item *
 
-readdir now returns UTF-8 characters instead of bytes.
+C<readdir> now returns UTF-8 characters instead of bytes.
 
 =item *
 
-L<glob|perlfunc/glob> and the C<< <> >> operator now return UTF-8
+C<readlink> now returns UTF-8 characters instead of bytes.
+
+=item *
+
+L<C<glob>|perlfunc/glob> and the C<< <> >> operator now return UTF-8
 characters instead of bytes.
 
 =back
@@ -112,6 +116,10 @@ sub import {
         *{$target . '::readdir'} = \&_utf8_readdir;
         $^H{'utf8::all::readdir'} = 1; # Track whether to encode/decode in the redefined function
 
+        # Replace readdir with utf8 aware version
+        *{$target . '::readlink'} = \&_utf8_readlink;
+        $^H{'utf8::all::readlink'} = 1; # Track whether to encode/decode in the redefined function
+
         # Replace glob with utf8 aware version
         *{$target . '::glob'} = \&_utf8_glob;
         $^H{'utf8::all::glob'} = 1;
@@ -143,6 +151,16 @@ sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
         return map { Encode::decode('UTF-8' ,$_) } CORE::readdir($handle);
     } else {
         return Encode::decode('UTF-8', CORE::readdir($handle));
+    }
+}
+
+sub _utf8_readlink(_) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
+    my $arg = shift;
+    my $hints = (caller 0)[10];
+    if (not $hints->{'utf8::all::readlink'}) {
+        return CORE::readlink($arg);
+    } else {
+        return Encode::decode('UTF-8', CORE::readlink(Encode::encode('UTF-8', $arg)));
     }
 }
 
