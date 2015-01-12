@@ -8,7 +8,7 @@ use 5.010; # state
 
 =head1 SYNOPSIS
 
-    use utf8::all;                # Turn on UTF-8, all of it.
+    use utf8::all;                      # Turn on UTF-8, all of it.
 
     open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
     print length 'føø bār';             # 7 UTF-8 characters
@@ -16,8 +16,10 @@ use 5.010; # state
 
 =head1 DESCRIPTION
 
-L<utf8> allows you to write your Perl encoded in UTF-8. That means
-UTF-8 strings, variable names, and regular expressions.
+The C<use utf8> pragma tells the Perl parser to allow UTF-8 in the
+program text in the current lexical scope. This also means that you
+can now use literal Unicode characters as part of strings, variable
+names, and regular expressions.
 
 C<utf8::all> goes further:
 
@@ -25,31 +27,39 @@ C<utf8::all> goes further:
 
 =item *
 
-Makes C<@ARGV> encoded in UTF-8 (when C<utf8::all> is used from the main package).
+L<C<charnames>|charnames> are imported so C<\N{...}> sequences can be
+used to compile Unicode characters based on names.
+
+=item *
+
+On Perl C<v5.11.0> or higher, the C<use feature 'unicode_strings'> is
+enabled.
+
+=item *
+
+C<use feature fc> and C<use feature unicode_eval> are enabled on Perl
+C<5.16.0> and higher.
 
 =item *
 
 Filehandles are opened with UTF-8 encoding turned on by default
-(including STDIN, STDOUT, STDERR). If you I<don't> want UTF-8 for a
-particular filehandle, you'll have to set C<binmode $filehandle>.
+(including STDIN, STDOUT, STDERR). Meaning that they automatically
+convert UTF-8 octets to characters and vice versa. If you I<don't>
+want UTF-8 for a particular filehandle, you'll have to set C<binmode
+$filehandle>.
 
 =item *
 
-L<charnames> are imported so C<\N{...}> sequences can be used to compile
-Unicode characters based on names.
+C<@ARGV> gets converted from UTF-8 octets to Unicode characters (when
+C<utf8::all> is used from the main package). This is similar to the
+behaviour of the C<-CA> perl command-line switch (see L<perlrun>).
 
 =item *
 
-C<readdir> now returns UTF-8 characters instead of bytes.
-
-=item *
-
-C<readlink> now returns UTF-8 characters instead of bytes.
-
-=item *
-
-L<C<glob>|perlfunc/glob> and the C<< <> >> operator now return UTF-8
-characters instead of bytes.
+C<readdir>, C<readlink>, C<readpipe> (including the C<qx//> and
+backtick operators), and L<C<glob>|perlfunc/glob> (including the C<< <>
+>> operator) now all work with and return Unicode characters instead
+of (UTF-8) octets.
 
 =back
 
@@ -72,8 +82,8 @@ some reason to:
 =head1 COMPATIBILITY
 
 The filesystems of Dos, Windows, and OS/2 do not (fully) support
-UTF-8. The C<readdir> function and C<glob> operators will therefore not
-be replaced on these systems.
+UTF-8. The C<readlink> and C<readdir> functions and C<glob> operators
+will therefore not be replaced on these systems.
 
 =head1 SEE ALSO
 
