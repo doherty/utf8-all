@@ -10,24 +10,26 @@ use Test::More;
 {
     use utf8::all;
 
-    is length "utf8::all is MËTÁŁ", 18;
+    is length "utf8::all is MËTÁŁ" => 18, 'unicode string is characters';
 
     # Test the standard handles and all newly opened handles are utf8
-    ok open my $test_fh, ">", "perlio_test";
+    ok((open my $test_fh, ">", "perlio_test"), 'open file for writing with utf8::all');
     END { unlink "perlio_test" }
     for my $fh (*STDOUT, *STDIN, *STDERR, $test_fh) {
         my @layers = PerlIO::get_layers($fh);
         ok(grep(m/utf8/, @layers), 'utf8 appears in the perlio layers')
-            or diag explain { $test_fh => \@layers };
+            or diag explain { $fh => \@layers };
         ok(grep(m/utf-8-strict/, @layers), 'utf-8-strict appears in the perlio layers')
-            or diag explain { $test_fh => \@layers };
+            or diag explain { $fh => \@layers };
     }
 }
 
 
 # And off
 {
-    ok open my $test_fh, ">", "perlio_test2";
+    is length "utf8::all is MËTÁŁ" => 21, 'unicode string is octets';
+
+    ok((open my $test_fh, ">", "perlio_test2"), 'open file for writing with utf8::all');
     END { unlink "perlio_test2" }
 
     my @layers = PerlIO::get_layers($test_fh);
