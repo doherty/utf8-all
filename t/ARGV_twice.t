@@ -2,7 +2,8 @@
 # Test that utf8::all doesn't double encode @ARGV [perl5i github 176]
 
 BEGIN {
-    @ARGV = qw(føø bar bāz);
+    # String literals are still utf-8 encoded octets here!
+    @ARGV = qw(føø bar bāz テスト);
 }
 
 {
@@ -10,7 +11,17 @@ BEGIN {
     use utf8::all;
 }
 
+{
+    use utf8::all;
+}
+
 use utf8::all;
 use Test::More tests => 1;
 
-is_deeply \@ARGV, [qw(føø bar bāz)];
+# føø bar bāz テスト still intact as unicode characters
+is_deeply \@ARGV => [
+    "\x{66}\x{f8}\x{f8}",
+    "\x{62}\x{61}\x{72}",
+    "\x{62}\x{101}\x{7a}",
+    "\x{30c6}\x{30b9}\x{30c8}"
+], '@ARGV as unicode characters instead of utf-8 octets';
