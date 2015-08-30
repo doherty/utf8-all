@@ -79,6 +79,12 @@ some reason to:
     my $text = do { local $/; <$in>};
     print length $text, "\n";         # 10, not 7!
 
+Instead of lexical scoping, you can also use C<no utf8::all> to turn
+off the effects.
+
+Note that the effect on C<@ARGV> and the C<STDIN>, C<STDOUT>, and
+C<STDERR> file handles is always global!
+
 =head1 COMPATIBILITY
 
 The filesystems of Dos, Windows, and OS/2 do not (fully) support
@@ -124,15 +130,15 @@ sub import {
 
         # Replace readdir with utf8 aware version
         *{$target . '::readdir'} = \&_utf8_readdir;
-        $^H{'utf8::all::readdir'} = 1; # Track whether to encode/decode in the redefined function
 
         # Replace readdir with utf8 aware version
         *{$target . '::readlink'} = \&_utf8_readlink;
-        $^H{'utf8::all::readlink'} = 1; # Track whether to encode/decode in the redefined function
 
         # Replace glob with utf8 aware version
         *{$target . '::glob'} = \&_utf8_glob;
-        $^H{'utf8::all::glob'} = 1;
+
+        # Set compiler hint to encode/decode in the redefined functions
+        $^H{'utf8::all'} = 1;
     }
 
     # Make @ARGV utf-8 when called from the main package, unless perl was launched
@@ -146,7 +152,20 @@ sub import {
         }
     }
 
-    $^H{'utf8::all'} = 1;
+    return;
+}
+
+sub unimport { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
+    # Disable features/pragmas in calling package
+    # Note: Does NOT undo the effect on @ARGV,
+    #       nor on the STDIN, STDOUT, and STDERR file handles!
+    #       These effects are always "global".
+
+    my $target = caller;
+    'utf8'->unimport::out_of($target);
+    'open'->import::into($target, qw{:std});
+
+    $^H{'utf8::all'} = 0; # Reset compiler hint
 
     return;
 }
@@ -155,7 +174,7 @@ sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     my $pre_handle = shift;
     my $handle = ref($pre_handle) ? $pre_handle : qualify_to_ref($pre_handle, caller);
     my $hints = (caller 0)[10];
-    if (not $hints->{'utf8::all::readdir'}) {
+    if (not $hints->{'utf8::all'}) {
         return CORE::readdir($handle);
     } elsif (wantarray) {
         return map { Encode::decode('UTF-8' ,$_) } CORE::readdir($handle);
@@ -167,7 +186,7 @@ sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
 sub _utf8_readlink(_) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     my $arg = shift;
     my $hints = (caller 0)[10];
-    if (not $hints->{'utf8::all::readlink'}) {
+    if (not $hints->{'utf8::all'}) {
         return CORE::readlink($arg);
     } else {
         return Encode::decode('UTF-8', CORE::readlink(Encode::encode('UTF-8', $arg)));
@@ -177,7 +196,7 @@ sub _utf8_readlink(_) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
 sub _utf8_glob {
     my $arg = $_[0]; # Making this a lexical somehow is important!
     my $hints = (caller 0)[10];
-    if (not $hints->{'utf8::all::glob'}) {
+    if (not $hints->{'utf8::all'}) {
         return CORE::glob($arg);
     } else {
         $arg = Encode::encode('UTF-8', $arg);

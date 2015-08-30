@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+   - Implemented "no utf8::all"                  [gh-33; HayoBaan]
+   - Corrected a number of tests                        [HayoBaan]
    - Added wrapper for readlink                  [gh-21; HayoBaan]
    - Added test for readpipe, qx, and backtick operator [HayoBaan]
    - Rewrote documentation                              [HayoBaan]
