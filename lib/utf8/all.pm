@@ -163,7 +163,7 @@ sub unimport { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 
     my $target = caller;
     'utf8'->unimport::out_of($target);
-    'open'->import::into($target, qw{:std});
+    'open'->import::into($target, qw{IO :bytes});
 
     $^H{'utf8::all'} = 0; # Reset compiler hint
 
