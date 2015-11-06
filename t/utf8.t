@@ -33,8 +33,13 @@ use Test::More;
     END { unlink "perlio_test2" }
 
     my @layers = PerlIO::get_layers($test_fh);
-    ok( !grep(/utf8/, @layers), q{utf8 doesn't appear in perlio layers})
-        or diag explain { $test_fh => \@layers };
+  SKIP: {
+        # If we have the Perl Unicode flag set that adds the UTF-8 layer,
+        # we need to skip this test.
+        skip 'Perl Unicode flag set that always adds UTF-8 layer to output', 1 if (${^UNICODE} & 16);
+        ok( !grep(/utf8/, @layers), q{utf8 doesn't appear in perlio layers})
+            or diag explain { $test_fh => \@layers };
+    }
     ok( !grep(m/utf-8-strict/, @layers), q{utf-8-strict doesn't appear in the perlio layers})
         or diag explain { $test_fh => \@layers };
 

@@ -1,8 +1,10 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+   - Tests now correctly handle the PERL_UNICODE env variable
+     and the -C perl command-line flag.          [gh-40; HayoBaan]
    - Implemented "no utf8::all"                  [gh-33; HayoBaan]
-   - Corrected a number of tests                        [HayoBaan]
+   - Corrected a number of tests                        [HayoBaan]   
    - Added wrapper for readlink                  [gh-21; HayoBaan]
    - Added test for readpipe, qx, and backtick operator [HayoBaan]
    - Rewrote documentation                              [HayoBaan]

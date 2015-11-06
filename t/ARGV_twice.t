@@ -4,6 +4,13 @@
 BEGIN {
     # String literals are still utf-8 encoded octets here!
     @ARGV = qw(føø bar bāz テスト);
+    if (${^UNICODE} & 32) {
+        # If we run with the Perl Unicode flag to automatically
+        # convert the command-line arguments to unicode characters,
+        # we need to do so here too!
+        require Encode;
+        $_ = Encode::decode('UTF-8' ,$_) for @ARGV;
+    }
 }
 
 {
