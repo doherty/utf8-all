@@ -1,0 +1,20 @@
+language: perl
+perl:
+ - "5.10"
+ - "5.12"
+ - "5.14"
+ - "5.16"
+notifications:
+    email:
+        recipients:
+            - doherty@cpan.org
+        on_success: "change"
+        on_failure: "always"
+env: AUTHOR_TESTING=1 RELEASE_TESTING=1 AUTOMATED_TESTING=1 EXTENDED_TESTING=1
+sudo: false
+branches:
+    only:
+        - master
+        - dev
+addons:
+    artifacts: true
