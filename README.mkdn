@@ -4,11 +4,11 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.016
+version 0.017
 
 # SYNOPSIS
 
-    use utf8::all;                # Turn on UTF-8, all of it.
+    use utf8::all;                      # Turn on UTF-8, all of it.
 
     open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
     print length 'føø bār';             # 7 UTF-8 characters
@@ -16,20 +16,30 @@ version 0.016
 
 # DESCRIPTION
 
-[utf8](https://metacpan.org/pod/utf8) allows you to write your Perl encoded in UTF-8. That means
-UTF-8 strings, variable names, and regular expressions.
+The `use utf8` pragma tells the Perl parser to allow UTF-8 in the
+program text in the current lexical scope. This also means that you
+can now use literal Unicode characters as part of strings, variable
+names, and regular expressions.
 
 `utf8::all` goes further:
 
-- Makes `@ARGV` encoded in UTF-8 (when `utf8::all` is used from the main package).
+- [`charnames`](https://metacpan.org/pod/charnames) are imported so `\N{...}` sequences can be
+used to compile Unicode characters based on names.
+- On Perl `v5.11.0` or higher, the `use feature 'unicode_strings'` is
+enabled.
+- `use feature fc` and `use feature unicode_eval` are enabled on Perl
+`5.16.0` and higher.
 - Filehandles are opened with UTF-8 encoding turned on by default
-(including STDIN, STDOUT, STDERR). If you _don't_ want UTF-8 for a
-particular filehandle, you'll have to set `binmode $filehandle`.
-- [charnames](https://metacpan.org/pod/charnames) are imported so `\N{...}` sequences can be used to compile
-Unicode characters based on names.
-- readdir now returns UTF-8 characters instead of bytes.
-- [glob](https://metacpan.org/pod/perlfunc#glob) and the `<>` operator now return UTF-8
-characters instead of bytes.
+(including STDIN, STDOUT, STDERR). Meaning that they automatically
+convert UTF-8 octets to characters and vice versa. If you _don't_
+want UTF-8 for a particular filehandle, you'll have to set `binmode
+$filehandle`.
+- `@ARGV` gets converted from UTF-8 octets to Unicode characters (when
+`utf8::all` is used from the main package). This is similar to the
+behaviour of the `-CA` perl command-line switch (see [perlrun](https://metacpan.org/pod/perlrun)).
+- `readdir`, `readlink`, `readpipe` (including the `qx//` and
+backtick operators), and [`glob`](https://metacpan.org/pod/perlfunc#glob) (including the `<>` operator) now all work with and return Unicode characters instead
+of (UTF-8) octets.
 
 ## Lexical scope
 
@@ -46,6 +56,12 @@ some reason to:
     open my $in, '<', 'outfile';      # in as raw
     my $text = do { local $/; <$in>};
     print length $text, "\n";         # 10, not 7!
+
+Instead of lexical scoping, you can also use `no utf8::all` to turn
+off the effects.
+
+Note that the effect on `@ARGV` and the `STDIN`, `STDOUT`, and
+`STDERR` file handles is always global!
 
 # SEE ALSO
 
@@ -81,8 +97,8 @@ web interface at [https://github.com/doherty/utf8-all/issues](https://github.com
 # COMPATIBILITY
 
 The filesystems of Dos, Windows, and OS/2 do not (fully) support
-UTF-8. The `readdir` function and `glob` operators will therefore not
-be replaced on these systems.
+UTF-8. The `readlink` and `readdir` functions and `glob` operators
+will therefore not be replaced on these systems.
 
 # AUTHORS
 
