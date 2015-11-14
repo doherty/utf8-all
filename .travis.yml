@@ -8,8 +8,6 @@ perl:
  - "5.20"
 notifications:
     email:
-        recipients:
-            - doherty@cpan.org
         on_success: "change"
         on_failure: "always"
 env: AUTHOR_TESTING=1 RELEASE_TESTING=1 AUTOMATED_TESTING=1 EXTENDED_TESTING=1
