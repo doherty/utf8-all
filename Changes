@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.017     2015-11-13
    - Tests now correctly handle the PERL_UNICODE env variable
      and the -C perl command-line flag.          [gh-40; HayoBaan]
    - Implemented "no utf8::all"                  [gh-33; HayoBaan]
