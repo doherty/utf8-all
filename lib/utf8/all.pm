@@ -6,6 +6,7 @@ use 5.010; # state
 # ABSTRACT: turn on Unicode - all of it
 # VERSION
 
+=encoding utf8
 =head1 SYNOPSIS
 
     use utf8::all;                      # Turn on UTF-8, all of it.
