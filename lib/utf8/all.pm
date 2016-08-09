@@ -117,12 +117,12 @@ state %_orig_functions;
 
 sub import {
     my $class = shift;
-    
+
     # Enable features/pragmas in calling package
     my $target = caller;
 
     my $utf8_encoding = $class->_choose_utf8_encoding;
-    
+
     'utf8'->import::into($target);
     'open'->import::into($target => $utf8_encoding, ':std');
     'charnames'->import::into($target, qw{:full :short});
@@ -227,11 +227,15 @@ sub _choose_utf8_encoding {
 
 =head1 WHICH UTF-8 ENCODING?
 
-I<TL;DR>. Perl's unicode has bugs. utf8::all will try to work around them.
+I<TL;DR>. Perl's unicode has bugs. utf8::all will try to work around
+them.
 
 As of this writing, Perl has several ways to do utf-8. It has to do
 with whether "unassigned" code points are considered errors or
-not. The details are in L<perlunicode: Noncharacter code points|http://perldoc.perl.org/perlunicode.html#Noncharacter-code-points>. Perl also has lots of Unicode bugs, particularly with threads and
+not. The details are in L<perlunicode: Noncharacter code
+points|http://perldoc.perl.org/perlunicode.html#Noncharacter-code-points>.
+
+Perl also has lots of Unicode bugs, particularly with threads and
 strict utf-8 encoding (ie. C<:encoding(UTF-8)>).
 
 utf8::all will prefer the strictest encoding available, but it may
@@ -241,11 +245,13 @@ utf-8 is handled.
 
 =head1 INTERACTION WITH AUTODIE
 
-If you use L<autodie>, which is a great idea, you need to use at least version
-B<2.12>, released on L<June 26, 2012|https://metacpan.org/source/PJF/autodie-2.12/Changes#L3>.
-Otherwise, autodie obliterates the IO layers set by the L<open> pragma. See
-L<RT #54777|https://rt.cpan.org/Ticket/Display.html?id=54777> and
-L<GH #7|https://github.com/doherty/utf8-all/issues/7>.
+If you use L<autodie>, which is a great idea, you need to use at least
+version B<2.12>, released on L<June 26,
+2012|https://metacpan.org/source/PJF/autodie-2.12/Changes#L3>.
+Otherwise, autodie obliterates the IO layers set by the L<open>
+pragma. See L<RT
+#54777|https://rt.cpan.org/Ticket/Display.html?id=54777> and L<GH
+#7|https://github.com/doherty/utf8-all/issues/7>.
 
 =cut
 
