@@ -110,15 +110,21 @@ L<Cwd::utf8> for fully utf-8 aware Cwd functions.
 use Import::Into;
 use parent qw(Encode charnames utf8 open warnings feature);
 use Symbol qw(qualify_to_ref);
+use Config;
 
 # Holds the pointers to the original version of redefined functions
 state %_orig_functions;
 
 sub import {
+    my $class = shift;
+    
     # Enable features/pragmas in calling package
     my $target = caller;
+
+    my $utf8_encoding = $class->_choose_utf8_encoding;
+    
     'utf8'->import::into($target);
-    'open'->import::into($target, qw{:encoding(UTF-8) :std});
+    'open'->import::into($target => $utf8_encoding, ':std');
     'charnames'->import::into($target, qw{:full :short});
     'warnings'->import::into($target, qw{FATAL utf8});
     'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
@@ -207,6 +213,31 @@ sub _utf8_glob {
         }
     }
 }
+
+sub _choose_utf8_encoding {
+    # No threads? No problem.
+    return ':encoding(UTF-8)'    if !$Config{usethreads} && !$Config{useithreads};
+
+    # 5.24.0 seems to have fixed the major utf8 issues.
+    return ':encoding(UTF-8)'    if $^V ge 5.24.0;
+
+    # A safe default.
+    return ':utf8';
+}
+
+=head1 WHICH UTF-8 ENCODING?
+
+I<TL;DR>. Perl's unicode has bugs. utf8::all will try to work around them.
+
+As of this writing, Perl has several ways to do utf-8. It has to do
+with whether "unassigned" code points are considered errors or
+not. The details are in L<perlunicode: Noncharacter code points|http://perldoc.perl.org/perlunicode.html#Noncharacter-code-points>. Perl also has lots of Unicode bugs, particularly with threads and
+strict utf-8 encoding (ie. C<:encoding(UTF-8)>).
+
+utf8::all will prefer the strictest encoding available, but it may
+choose a less strict utf-8 encoding if it detects your Perl is
+vulnerable to Unicode bugs. This should have no effect on how valid
+utf-8 is handled.
 
 =head1 INTERACTION WITH AUTODIE
 
