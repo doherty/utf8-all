@@ -1,107 +1,145 @@
-=head1 SYNOPSIS
+NAME
 
-    use utf8::all;                      # Turn on UTF-8, all of it.
+    utf8::all - turn on Unicode - all of it
 
-    open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
-    print length 'føø bār';             # 7 UTF-8 characters
-    my $utf8_arg = shift @ARGV;         # @ARGV is UTF-8 too (only for main)
+VERSION
 
-=head1 DESCRIPTION
+    version 0.018
 
-The C<use utf8> pragma tells the Perl parser to allow UTF-8 in the
-program text in the current lexical scope. This also means that you
-can now use literal Unicode characters as part of strings, variable
-names, and regular expressions.
+SYNOPSIS
 
-C<utf8::all> goes further:
+        use utf8::all;                      # Turn on UTF-8, all of it.
+    
+        open my $in, '<', 'contains-utf8';  # UTF-8 already turned on here
+        print length 'føø bār';             # 7 UTF-8 characters
+        my $utf8_arg = shift @ARGV;         # @ARGV is UTF-8 too (only for main)
 
-=over 4
+DESCRIPTION
 
-=item *
+    The use utf8 pragma tells the Perl parser to allow UTF-8 in the program
+    text in the current lexical scope. This also means that you can now use
+    literal Unicode characters as part of strings, variable names, and
+    regular expressions.
 
-L<C<charnames>|charnames> are imported so C<\N{...}> sequences can be
-used to compile Unicode characters based on names.
+    utf8::all goes further:
 
-=item *
+      * charnames are imported so \N{...} sequences can be used to compile
+      Unicode characters based on names.
 
-On Perl C<v5.11.0> or higher, the C<use feature 'unicode_strings'> is
-enabled.
+      * On Perl v5.11.0 or higher, the use feature 'unicode_strings' is
+      enabled.
 
-=item *
+      * use feature fc and use feature unicode_eval are enabled on Perl
+      5.16.0 and higher.
 
-C<use feature fc> and C<use feature unicode_eval> are enabled on Perl
-C<5.16.0> and higher.
+      * Filehandles are opened with UTF-8 encoding turned on by default
+      (including STDIN, STDOUT, STDERR). Meaning that they automatically
+      convert UTF-8 octets to characters and vice versa. If you don't want
+      UTF-8 for a particular filehandle, you'll have to set binmode
+      $filehandle.
 
-=item *
+      * @ARGV gets converted from UTF-8 octets to Unicode characters (when
+      utf8::all is used from the main package). This is similar to the
+      behaviour of the -CA perl command-line switch (see perlrun).
 
-Filehandles are opened with UTF-8 encoding turned on by default
-(including STDIN, STDOUT, STDERR). Meaning that they automatically
-convert UTF-8 octets to characters and vice versa. If you I<don't>
-want UTF-8 for a particular filehandle, you'll have to set C<binmode
-$filehandle>.
+      * readdir, readlink, readpipe (including the qx// and backtick
+      operators), and glob (including the <> operator) now all work with
+      and return Unicode characters instead of (UTF-8) octets.
 
-=item *
+ Lexical Scope
 
-C<@ARGV> gets converted from UTF-8 octets to Unicode characters (when
-C<utf8::all> is used from the main package). This is similar to the
-behaviour of the C<-CA> perl command-line switch (see L<perlrun>).
+    The pragma is lexically-scoped, so you can do the following if you had
+    some reason to:
 
-=item *
+        {
+            use utf8::all;
+            open my $out, '>', 'outfile';
+            my $utf8_str = 'føø bār';
+            print length $utf8_str, "\n"; # 7
+            print $out $utf8_str;         # out as utf8
+        }
+        open my $in, '<', 'outfile';      # in as raw
+        my $text = do { local $/; <$in>};
+        print length $text, "\n";         # 10, not 7!
 
-C<readdir>, C<readlink>, C<readpipe> (including the C<qx//> and
-backtick operators), and L<C<glob>|perlfunc/glob> (including the C<< <>
->> operator) now all work with and return Unicode characters instead
-of (UTF-8) octets.
+    Instead of lexical scoping, you can also use no utf8::all to turn off
+    the effects.
 
-=back
+    Note that the effect on @ARGV and the STDIN, STDOUT, and STDERR file
+    handles is always global!
 
-=head2 Lexical scope
+ UTF-8 Errors
 
-The pragma is lexically-scoped, so you can do the following if you had
-some reason to:
+    By default, utf8::all will handle invalid code points (i.e., utf-8 that
+    does not map to a valid unicode "character"), as a fatal error.
 
-    {
-        use utf8::all;
-        open my $out, '>', 'outfile';
-        my $utf8_str = 'føø bār';
-        print length $utf8_str, "\n"; # 7
-        print $out $utf8_str;         # out as utf8
-    }
-    open my $in, '<', 'outfile';      # in as raw
-    my $text = do { local $/; <$in>};
-    print length $text, "\n";         # 10, not 7!
+    Note: On Perl < v5.24.0 a bug in handling the I/O encoding layers in
+    combination with threads (and, on Windows, forks) causes a segmentation
+    fault. To prevent this, utf8::all will use the non-strict :utf8 instead
+    of :encoding(UTF-8) for I/O in case of a thread enabled Perl < 5.24.0.
+    If threads are not enabled for your Perl version, or if you are using a
+    version >= v5.24.0, utf8::all will use the strict (and recommended)
+    :encoding(UTF-8) I/O layer.
 
-Instead of lexical scoping, you can also use C<no utf8::all> to turn
-off the effects.
+    Note: For glob, readdir, and readlink, one can decide how decoding
+    errors are handled by setting the attribute "$utf8::all::UTF8_CHECK".
 
-Note that the effect on C<@ARGV> and the C<STDIN>, C<STDOUT>, and
-C<STDERR> file handles is always global!
+ATTRIBUTES
 
-=head1 COMPATIBILITY
+ $utf8::all::UTF8_CHECK
 
-The filesystems of Dos, Windows, and OS/2 do not (fully) support
-UTF-8. The C<readlink> and C<readdir> functions and C<glob> operators
-will therefore not be replaced on these systems.
+    By default utf8::all marks decoding errors as fatal (default value for
+    this setting is Encode::FB_CROAK). If you want, you can change this by
+    setting $utf8::all::UTF8_CHECK. The value Encode::FB_WARN reports the
+    encoding errors as warnings, and Encode::FB_DEFAULT will completely
+    ignore them. Please see Encode for details. Note: Encode::LEAVE_SRC is
+    always enforced.
 
-=head1 SEE ALSO
+    Important: Only controls the handling of decoding errors in glob,
+    readdir, readlink.
 
-=over 4
+INTERACTION WITH AUTODIE
 
-=item *
+    If you use autodie, which is a great idea, you need to use at least
+    version 2.12, released on June 26, 2012
+    <https://metacpan.org/source/PJF/autodie-2.12/Changes#L3>. Otherwise,
+    autodie obliterates the IO layers set by the open pragma. See RT #54777
+    <https://rt.cpan.org/Ticket/Display.html?id=54777> and GH #7
+    <https://github.com/doherty/utf8-all/issues/7>.
 
-L<File::Find::utf8> for fully utf-8 aware File::Find functions.
+BUGS
 
-=item *
+    Please report any bugs or feature requests on the bugtracker website
+    <https://github.com/doherty/utf8-all/issues>.
 
-L<Cwd::utf8> for fully utf-8 aware Cwd functions.
+    When submitting a bug or request, please include a test-file or a patch
+    to an existing test-file that illustrates the bug or desired feature.
 
-=back
+COMPATIBILITY
 
-=head1 INTERACTION WITH AUTODIE
+    The filesystems of Dos, Windows, and OS/2 do not (fully) support UTF-8.
+    The readlink and readdir functions and glob operators will therefore
+    not be replaced on these systems.
 
-If you use L<autodie>, which is a great idea, you need to use at least version
-B<2.12>, released on L<June 26, 2012|https://metacpan.org/source/PJF/autodie-2.12/Changes#L3>.
-Otherwise, autodie obliterates the IO layers set by the L<open> pragma. See
-L<RT #54777|https://rt.cpan.org/Ticket/Display.html?id=54777> and
-L<GH #7|https://github.com/doherty/utf8-all/issues/7>.
+SEE ALSO
+
+      * File::Find::utf8 for fully utf-8 aware File::Find functions.
+
+      * Cwd::utf8 for fully utf-8 aware Cwd functions.
+
+AUTHORS
+
+      * Michael Schwern <mschwern@cpan.org>
+
+      * Mike Doherty <doherty@cpan.org>
+
+      * Hayo Baan <hayobaan@cpan.org>
+
+COPYRIGHT AND LICENSE
+
+    This software is copyright (c) 2009 by Michael Schwern
+    <mschwern@cpan.org>; he originated it.
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
 

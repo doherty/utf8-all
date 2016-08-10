@@ -4,7 +4,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.017
+version 0.018
 
 # SYNOPSIS
 
@@ -41,7 +41,7 @@ behaviour of the `-CA` perl command-line switch (see [perlrun](https://metacpan.
 backtick operators), and [`glob`](https://metacpan.org/pod/perlfunc#glob) (including the `<>` operator) now all work with and return Unicode characters instead
 of (UTF-8) octets.
 
-## Lexical scope
+## Lexical Scope
 
 The pragma is lexically-scoped, so you can do the following if you had
 some reason to:
@@ -63,36 +63,56 @@ off the effects.
 Note that the effect on `@ARGV` and the `STDIN`, `STDOUT`, and
 `STDERR` file handles is always global!
 
-# SEE ALSO
+## UTF-8 Errors
 
-- [File::Find::utf8](https://metacpan.org/pod/File::Find::utf8) for fully utf-8 aware File::Find functions.
-- [Cwd::utf8](https://metacpan.org/pod/Cwd::utf8) for fully utf-8 aware Cwd functions.
+By default, `utf8::all` will handle invalid code points (i.e.,
+utf-8 that does not map to a valid unicode "character"), as a fatal
+error.
+
+Note: On Perl < v5.24.0 a bug in handling the I/O encoding layers in
+combination with threads (and, on Windows, forks) causes a
+segmentation fault. To prevent this, `utf8::all` will use the
+non-strict `:utf8` instead of `:encoding(UTF-8)` for I/O in case of
+a thread enabled Perl < 5.24.0. If threads are not enabled for your
+Perl version, or if you are using a version >= v5.24.0, `utf8::all`
+will use the strict (and recommended) `:encoding(UTF-8)` I/O layer.
+
+Note: For `glob`, `readdir`, and `readlink`, one can decide how
+decoding errors are handled by setting the attribute
+["$utf8::all::UTF8\_CHECK"](#utf8-all-utf8_check).
+
+# ATTRIBUTES
+
+## $utf8::all::UTF8\_CHECK
+
+By default `utf8::all` marks decoding errors as fatal (default value
+for this setting is `Encode::FB_CROAK`). If you want, you can change this by
+setting `$utf8::all::UTF8_CHECK`. The value `Encode::FB_WARN` reports
+the encoding errors as warnings, and `Encode::FB_DEFAULT` will completely
+ignore them. Please see [Encode](https://metacpan.org/pod/Encode) for details. Note: `Encode::LEAVE_SRC` is
+_always_ enforced.
+
+Important: Only controls the handling of decoding errors in `glob`,
+`readdir`, `readlink`.
 
 # INTERACTION WITH AUTODIE
 
-If you use [autodie](https://metacpan.org/pod/autodie), which is a great idea, you need to use at least version
-**2.12**, released on [June 26, 2012](https://metacpan.org/source/PJF/autodie-2.12/Changes#L3).
-Otherwise, autodie obliterates the IO layers set by the [open](https://metacpan.org/pod/open) pragma. See
-[RT #54777](https://rt.cpan.org/Ticket/Display.html?id=54777) and
-[GH #7](https://github.com/doherty/utf8-all/issues/7).
+If you use [autodie](https://metacpan.org/pod/autodie), which is a great idea, you need to use at least
+version **2.12**, released on [June 26,
+2012](https://metacpan.org/source/PJF/autodie-2.12/Changes#L3).
+Otherwise, autodie obliterates the IO layers set by the [open](https://metacpan.org/pod/open)
+pragma. See [RT
+\#54777](https://rt.cpan.org/Ticket/Display.html?id=54777) and [GH
+\#7](https://github.com/doherty/utf8-all/issues/7).
 
-# AVAILABILITY
+# BUGS
 
-The project homepage is [http://metacpan.org/release/utf8-all/](http://metacpan.org/release/utf8-all/).
+Please report any bugs or feature requests on the bugtracker
+[website](https://github.com/doherty/utf8-all/issues).
 
-The latest version of this module is available from the Comprehensive Perl
-Archive Network (CPAN). Visit [http://www.perl.com/CPAN/](http://www.perl.com/CPAN/) to find a CPAN
-site near you, or see [https://metacpan.org/module/utf8::all/](https://metacpan.org/module/utf8::all/).
-
-# SOURCE
-
-The development version is on github at [http://github.com/doherty/utf8-all](http://github.com/doherty/utf8-all)
-and may be cloned from [git://github.com/doherty/utf8-all.git](git://github.com/doherty/utf8-all.git)
-
-# BUGS AND LIMITATIONS
-
-You can make new bug reports, and view existing ones, through the
-web interface at [https://github.com/doherty/utf8-all/issues](https://github.com/doherty/utf8-all/issues).
+When submitting a bug or request, please include a test-file or a
+patch to an existing test-file that illustrates the bug or desired
+feature.
 
 # COMPATIBILITY
 
@@ -100,14 +120,20 @@ The filesystems of Dos, Windows, and OS/2 do not (fully) support
 UTF-8. The `readlink` and `readdir` functions and `glob` operators
 will therefore not be replaced on these systems.
 
+# SEE ALSO
+
+- [File::Find::utf8](https://metacpan.org/pod/File::Find::utf8) for fully utf-8 aware File::Find functions.
+- [Cwd::utf8](https://metacpan.org/pod/Cwd::utf8) for fully utf-8 aware Cwd functions.
+
 # AUTHORS
 
 - Michael Schwern <mschwern@cpan.org>
 - Mike Doherty <doherty@cpan.org>
+- Hayo Baan <hayobaan@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Michael Schwern <mschwern@cpan.org>.
+This software is copyright (c) 2009 by Michael Schwern <mschwern@cpan.org>; he originated it.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
