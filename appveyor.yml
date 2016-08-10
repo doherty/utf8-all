@@ -13,9 +13,9 @@ install:
   - cpanm --installdeps .
 
 build_script:
-  - perl Build.PL
-  - ./Build
+  - perl Makefile.PL
+  - make
 
 test_script:
-  - ./Build test
+  - make test
 
