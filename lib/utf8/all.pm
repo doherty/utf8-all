@@ -167,7 +167,17 @@ sub import {
     my $utf8_IO_encoding = $class->_choose_utf8_IO_encoding;
 
     'utf8'->import::into($target);
-    'open'->import::into($target => $utf8_IO_encoding, ':std');
+    'open'->import::into($target => "IO" => $utf8_IO_encoding);
+
+    # use open ':std' only works with some encodings.
+    state $have_encoded_std = 0;
+    if( !$have_encoded_std ) {
+        binmode STDERR, $utf8_IO_encoding;
+        binmode STDOUT, $utf8_IO_encoding;
+        binmode STDIN,  $utf8_IO_encoding;
+        $have_encoded_std = 1;
+    }
+
     'charnames'->import::into($target, qw{:full :short});
     'warnings'->import::into($target, qw{FATAL utf8});
     'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
@@ -272,7 +282,8 @@ sub _choose_utf8_IO_encoding {
     return ':encoding(UTF-8)' if $^V >= v5.24.0 || (!$Config{usethreads} && !$Config{useithreads});
 
     # A safe default.
-    return ':utf8';
+    require PerlIO::utf8_strict;
+    return ':utf8_strict';
 }
 
 =head1 INTERACTION WITH AUTODIE
