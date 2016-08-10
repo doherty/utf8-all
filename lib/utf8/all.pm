@@ -63,7 +63,7 @@ of (UTF-8) octets.
 
 =back
 
-=head2 Lexical scope
+=head2 Lexical Scope
 
 The pragma is lexically-scoped, so you can do the following if you had
 some reason to:
@@ -84,6 +84,24 @@ off the effects.
 
 Note that the effect on C<@ARGV> and the C<STDIN>, C<STDOUT>, and
 C<STDERR> file handles is always global!
+
+=head2 UTF-8 Errors
+
+By default, C<utf8::all> will handle invalid code points (i.e.,
+utf-8 that does not map to a valid unicode "character"), as a fatal
+error.
+
+Note: On Perl < v5.24.0 a bug in handling the I/O encoding layers in
+combination with threads (and, on Windows, forks) causes a
+segmentation fault. To prevent this, C<utf8::all> will use the
+non-strict C<:utf8> instead of C<:encoding(UTF-8)> for I/O in case of
+a thread enabled Perl < 5.24.0. If threads are not enabled for your
+Perl version, or if you are using a version >= v5.24.0, C<utf8::all>
+will use the strict (and recommended) C<:encoding(UTF-8)> I/O layer.
+
+Note: For C<glob>, C<readdir>, and C<readlink>, one can decide how
+decoding errors are handled by setting the attribute
+L</"$utf8::all::UTF8_CHECK">.
 
 =head1 COMPATIBILITY
 
@@ -115,16 +133,41 @@ use Config;
 # Holds the pointers to the original version of redefined functions
 state %_orig_functions;
 
+# Current (i.e., this) package
+my $current_package = __PACKAGE__;
+
+require Carp;
+$Carp::Internal{$current_package}++; # To get warnings reported at correct caller level
+
+=attr $utf8::all::UTF8_CHECK
+
+By default C<utf8::all> marks decoding errors as fatal (default value
+for this setting is C<Encode::FB_CROAK>). If you want, you can change this by
+setting C<$utf8::all::UTF8_CHECK>. The value C<Encode::FB_WARN> reports
+the encoding errors as warnings, and C<Encode::FB_DEFAULT> will completely
+ignore them. Please see L<Encode> for details. Note: C<Encode::LEAVE_SRC> is
+I<always> enforced.
+
+Important: Only controls the handling of decoding errors in C<glob>,
+C<readdir>, C<readlink>.
+
+=cut
+
+our $UTF8_CHECK = Encode::FB_CROAK; # Die on encoding errors
+
+# UTF-8 Encoding object
+my $_UTF8 = Encode::find_encoding('UTF-8');
+
 sub import {
     my $class = shift;
 
     # Enable features/pragmas in calling package
     my $target = caller;
 
-    my $utf8_encoding = $class->_choose_utf8_encoding;
+    my $utf8_IO_encoding = $class->_choose_utf8_IO_encoding;
 
     'utf8'->import::into($target);
-    'open'->import::into($target => $utf8_encoding, ':std');
+    'open'->import::into($target => $utf8_IO_encoding, ':std');
     'charnames'->import::into($target, qw{:full :short});
     'warnings'->import::into($target, qw{FATAL utf8});
     'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
@@ -154,7 +197,8 @@ sub import {
     if (!(${^UNICODE} & 32)) {
         state $have_encoded_argv = 0;
         if ($target eq 'main' && !$have_encoded_argv++) {
-            $_ = Encode::decode('UTF-8' ,$_) for @ARGV;
+            $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
+            $_ = ($_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_) for @ARGV;
         }
     }
 
@@ -178,14 +222,18 @@ sub unimport { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 
 sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     my $pre_handle = shift;
-    my $handle = ref($pre_handle) ? $pre_handle : qualify_to_ref($pre_handle, caller);
+    $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
+    my $handle = ref($pre_handle) ? $pre_handle : qualify_to_ref($pre_handle ? $_UTF8->encode($pre_handle, $UTF8_CHECK) : $pre_handle, caller);
     my $hints = (caller 0)[10];
     if (not $hints->{'utf8::all'}) {
         return CORE::readdir($handle);
-    } elsif (wantarray) {
-        return map { Encode::decode('UTF-8' ,$_) } CORE::readdir($handle);
     } else {
-        return Encode::decode('UTF-8', CORE::readdir($handle));
+        if (wantarray) {
+            return map { $_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_ } CORE::readdir($handle);
+        } else {
+            my $r = CORE::readdir($handle);
+            return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
+        }
     }
 }
 
@@ -195,7 +243,10 @@ sub _utf8_readlink(_) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     if (not $hints->{'utf8::all'}) {
         return CORE::readlink($arg);
     } else {
-        return Encode::decode('UTF-8', CORE::readlink(Encode::encode('UTF-8', $arg)));
+        $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
+        $arg = $arg ? $_UTF8->encode($arg, $UTF8_CHECK) : $arg;
+        my $r = CORE::readlink($arg);
+        return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
     }
 }
 
@@ -205,43 +256,24 @@ sub _utf8_glob {
     if (not $hints->{'utf8::all'}) {
         return CORE::glob($arg);
     } else {
-        $arg = Encode::encode('UTF-8', $arg);
+        $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
+        $arg = $arg ? $_UTF8->encode($arg, $UTF8_CHECK) : $arg;
         if (wantarray) {
-            return map { Encode::decode('UTF-8' ,$_) } CORE::glob($arg);
+            return map { $_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_ } CORE::glob($arg);
         } else {
-            return Encode::decode('UTF-8', CORE::glob($arg));
+            my $r = CORE::glob($arg);
+            return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
         }
     }
 }
 
-sub _choose_utf8_encoding {
-    # No threads? No problem.
-    return ':encoding(UTF-8)'    if !$Config{usethreads} && !$Config{useithreads};
-
-    # 5.24.0 seems to have fixed the major utf8 issues.
-    return ':encoding(UTF-8)'    if $^V ge 5.24.0;
+sub _choose_utf8_IO_encoding {
+    # Perl >= 5.24.0 or no threads? No problem.
+    return ':encoding(UTF-8)' if $^V >= v5.24.0 || (!$Config{usethreads} && !$Config{useithreads});
 
     # A safe default.
     return ':utf8';
 }
-
-=head1 WHICH UTF-8 ENCODING?
-
-I<TL;DR>. Perl's unicode has bugs. utf8::all will try to work around
-them.
-
-As of this writing, Perl has several ways to do utf-8. It has to do
-with whether "unassigned" code points are considered errors or
-not. The details are in L<perlunicode: Noncharacter code
-points|http://perldoc.perl.org/perlunicode.html#Noncharacter-code-points>.
-
-Perl also has lots of Unicode bugs, particularly with threads and
-strict utf-8 encoding (ie. C<:encoding(UTF-8)>).
-
-utf8::all will prefer the strictest encoding available, but it may
-choose a less strict utf-8 encoding if it detects your Perl is
-vulnerable to Unicode bugs. This should have no effect on how valid
-utf-8 is handled.
 
 =head1 INTERACTION WITH AUTODIE
 
