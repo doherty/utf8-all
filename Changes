@@ -2,6 +2,9 @@ Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
 
+0.019     2016-08-10
+  * Removed Build.PL, require >= v0.009 of PluginBundle              [HayoBaan]
+
 0.018     2016-08-10
    - Now choosing a utf-8 encoding that will not break threads [gh-43; schwern]
    - Handling utf-8 encoding/decoding errors                  [gh-35; HayoBaan]
