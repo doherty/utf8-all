@@ -30,7 +30,7 @@ is "テスト" => $expected_unicode, 'Literal string should be characters under 
         my @layers = PerlIO::get_layers($handles{$fh});
         ok(!grep(m/utf8/, @layers), "$fh: utf8 does not appear in the perlio layers")
             or diag explain { $fh => \@layers };
-        ok(!grep(m/utf-8-strict/, @layers), "$fh: utf-8-strict does not appear in the perlio layers")
+        ok(!grep(m/utf-?8[-_]strict/, @layers), "$fh: utf-?8[-_]strict does not appear in the perlio layers")
             or diag explain { $fh => \@layers };
     }
 
@@ -51,6 +51,8 @@ my %handles = (
 for my $fh (keys %handles) {
     my @layers = PerlIO::get_layers($handles{$fh});
     ok(grep(m/utf8/, @layers), "$fh: utf8 does appear in the perlio layers")
+        or diag explain { $fh => \@layers };
+    ok(grep(m/utf-?8[-_]strict/, @layers), "$fh: utf-?8[-_]strict does appear in the perlio layers")
         or diag explain { $fh => \@layers };
 }
 
