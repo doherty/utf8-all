@@ -15,7 +15,9 @@ plan tests => 9;
 use Encode ();
 use utf8::all;
 
-# Argument to abs_path with an illegal Unicode character
+no warnings FATAL => 'utf8'; # disable fatal utf8 warnings
+
+# String with an illegal Unicode character
 my $faulty_string = "Illegal \x{d800} character";
 
 # Croak on faulty utf-8
