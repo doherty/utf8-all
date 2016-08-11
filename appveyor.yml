@@ -4,7 +4,7 @@ branches:
 skip_tags: true
 
 cache:
-  - C:\strawberry
+  - C:\strawberry -> appveyor.yml
 
 install:
   - if not exist "C:\strawberry" cinst strawberryperl
