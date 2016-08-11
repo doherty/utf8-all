@@ -2,8 +2,12 @@ Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
 
+0.020     2016-08-11
+   - Always using PerlIO::utf8_strict as I/O conversion        [gh-44; schwern]
+   - Fixed "UTF-16 surrogate 0xd800" error in some builds            [HayoBaan]
+
 0.019     2016-08-10
-  * Removed Build.PL, require >= v0.009 of PluginBundle              [HayoBaan]
+   - Removed Build.PL, require >= v0.009 of PluginBundle             [HayoBaan]
 
 0.018     2016-08-10
    - Now choosing a utf-8 encoding that will not break threads [gh-43; schwern]
