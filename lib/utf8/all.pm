@@ -152,8 +152,6 @@ our $UTF8_CHECK = Encode::FB_CROAK; # Die on encoding errors
 my $_UTF8 = Encode::find_encoding('UTF-8');
 
 sub import {
-    my $class = shift;
-
     # Enable features/pragmas in calling package
     my $target = caller;
 
