@@ -37,10 +37,10 @@ use Test::More;
         # If we have the Perl Unicode flag set that adds the UTF-8 layer,
         # we need to skip this test.
         skip 'Perl Unicode flag set that always adds UTF-8 layer to output', 1 if (${^UNICODE} & 16);
-        ok( !grep(/utf8/, @layers), q{utf8 doesn't appear in perlio layers})
+        ok(!grep(/utf8/, @layers), q{utf8 does not appear in perlio layers})
             or diag explain { $test_fh => \@layers };
     }
-    ok( !grep(m/utf-?8[-_]strict/, @layers), q{utf-?8[-_]strict doesn't appear in the perlio layers})
+    ok(!grep(m/utf-?8[-_]strict/, @layers), q{utf-?8[-_]strict does not appear in the perlio layers})
         or diag explain { $test_fh => \@layers };
 
 }
