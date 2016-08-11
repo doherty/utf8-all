@@ -87,21 +87,11 @@ C<STDERR> file handles is always global!
 
 =head2 UTF-8 Errors
 
-By default, C<utf8::all> will handle invalid code points (i.e.,
-utf-8 that does not map to a valid unicode "character"), as a fatal
-error.
+C<utf8::all> will handle invalid code points (i.e., utf-8 that does
+not map to a valid unicode "character"), as a fatal error.
 
-Note: On Perl < v5.24.0 a bug in handling the I/O encoding layers in
-combination with threads (and, on Windows, forks) causes a
-segmentation fault. To prevent this, C<utf8::all> will use the
-non-strict C<:utf8> instead of C<:encoding(UTF-8)> for I/O in case of
-a thread enabled Perl < 5.24.0. If threads are not enabled for your
-Perl version, or if you are using a version >= v5.24.0, C<utf8::all>
-will use the strict (and recommended) C<:encoding(UTF-8)> I/O layer.
-
-Note: For C<glob>, C<readdir>, and C<readlink>, one can decide how
-decoding errors are handled by setting the attribute
-L</"$utf8::all::UTF8_CHECK">.
+For C<glob>, C<readdir>, and C<readlink>, one can change this
+behaviour by setting the attribute L</"$utf8::all::UTF8_CHECK">.
 
 =head1 COMPATIBILITY
 
@@ -153,6 +143,9 @@ C<readdir>, C<readlink>.
 
 =cut
 
+use Encode ();
+use PerlIO::utf8_strict;
+
 our $UTF8_CHECK = Encode::FB_CROAK; # Die on encoding errors
 
 # UTF-8 Encoding object
@@ -164,18 +157,15 @@ sub import {
     # Enable features/pragmas in calling package
     my $target = caller;
 
-    my $utf8_IO_encoding = $class->_choose_utf8_IO_encoding;
-
     'utf8'->import::into($target);
-    'open'->import::into($target => "IO" => $utf8_IO_encoding);
+    'open'->import::into($target, 'IO' => ':utf8_strict');
 
     # use open ':std' only works with some encodings.
     state $have_encoded_std = 0;
-    if( !$have_encoded_std ) {
-        binmode STDERR, $utf8_IO_encoding;
-        binmode STDOUT, $utf8_IO_encoding;
-        binmode STDIN,  $utf8_IO_encoding;
-        $have_encoded_std = 1;
+    if (!$have_encoded_std++) {
+        binmode STDERR, ':utf8_strict';
+        binmode STDOUT, ':utf8_strict';
+        binmode STDIN,  ':utf8_strict';
     }
 
     'charnames'->import::into($target, qw{:full :short});
@@ -275,15 +265,6 @@ sub _utf8_glob {
             return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
         }
     }
-}
-
-sub _choose_utf8_IO_encoding {
-    # Perl >= 5.24.0 or no threads? No problem.
-    return ':encoding(UTF-8)' if $^V >= v5.24.0 || (!$Config{usethreads} && !$Config{useithreads});
-
-    # A safe default.
-    require PerlIO::utf8_strict;
-    return ':utf8_strict';
 }
 
 =head1 INTERACTION WITH AUTODIE
