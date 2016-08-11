@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    version 0.019
+    version 0.020
 
 SYNOPSIS
 
@@ -70,19 +70,11 @@ DESCRIPTION
 
  UTF-8 Errors
 
-    By default, utf8::all will handle invalid code points (i.e., utf-8 that
-    does not map to a valid unicode "character"), as a fatal error.
+    utf8::all will handle invalid code points (i.e., utf-8 that does not
+    map to a valid unicode "character"), as a fatal error.
 
-    Note: On Perl < v5.24.0 a bug in handling the I/O encoding layers in
-    combination with threads (and, on Windows, forks) causes a segmentation
-    fault. To prevent this, utf8::all will use the non-strict :utf8 instead
-    of :encoding(UTF-8) for I/O in case of a thread enabled Perl < 5.24.0.
-    If threads are not enabled for your Perl version, or if you are using a
-    version >= v5.24.0, utf8::all will use the strict (and recommended)
-    :encoding(UTF-8) I/O layer.
-
-    Note: For glob, readdir, and readlink, one can decide how decoding
-    errors are handled by setting the attribute "$utf8::all::UTF8_CHECK".
+    For glob, readdir, and readlink, one can change this behaviour by
+    setting the attribute "$utf8::all::UTF8_CHECK".
 
 ATTRIBUTES
 
