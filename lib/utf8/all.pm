@@ -139,7 +139,7 @@ ignore them. Please see L<Encode> for details. Note: C<Encode::LEAVE_SRC> is
 I<always> enforced.
 
 Important: Only controls the handling of decoding errors in C<glob>,
-C<readdir>, C<readlink>.
+C<readdir>, and C<readlink>.
 
 =cut
 
@@ -221,12 +221,10 @@ sub unimport { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     my $pre_handle = shift;
     my $hints = (caller 0)[10];
+   my $handle = ref($pre_handle) ? $pre_handle : qualify_to_ref($pre_handle, caller);
     if (not $hints->{'utf8::all'}) {
-        my $handle = ref($pre_handle) ? $pre_handle : qualify_to_ref($pre_handle, caller);
         return CORE::readdir($handle);
     } else {
-        $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
-        my $handle = !$pre_handle || ref($pre_handle) ? $pre_handle : qualify_to_ref($_UTF8->encode($pre_handle, $UTF8_CHECK), caller);
         if (wantarray) {
             return map { $_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_ } CORE::readdir($handle);
         } else {
