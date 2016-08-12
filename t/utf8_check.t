@@ -20,28 +20,6 @@ no warnings FATAL => 'utf8'; # disable fatal utf8 warnings
 # String with an illegal Unicode character
 my $faulty_string = "Illegal \x{d800} character";
 
-# Croak on faulty utf-8
-{
-    Test::Exception::throws_ok
-          {
-              glob($faulty_string);
-          }
-          qr/"\\x\{d800\}" does not map to utf8/,
-          'croak on encoding error (default): glob';
-    Test::Exception::throws_ok
-          {
-              readlink($faulty_string);
-          }
-          qr/"\\x\{d800\}" does not map to utf8/,
-          'croak on encoding error (default): readlink';
-    Test::Exception::throws_ok
-          {
-              readdir($faulty_string);
-          }
-          qr/"\\x\{d800\}" does not map to utf8/,
-          'croak on encoding error (default): readdir';
-}
-
 # Warn on faulty utf-8
 {
     local $utf8::all::UTF8_CHECK = Encode::FB_WARN;
@@ -64,6 +42,28 @@ my $faulty_string = "Illegal \x{d800} character";
           # readdir throws additional warning on invalid character
           [ qr/^"\\x\{d800\}" does not map to utf8/, qr/dirhandle/ ],
           'warn on encoding error: readdir';
+}
+
+# Croak on faulty utf-8
+{
+    Test::Exception::throws_ok
+          {
+              glob($faulty_string);
+          }
+          qr/"\\x\{d800\}" does not map to utf8/,
+          'croak on encoding error (default): glob';
+    Test::Exception::throws_ok
+          {
+              readlink($faulty_string);
+          }
+          qr/"\\x\{d800\}" does not map to utf8/,
+          'croak on encoding error (default): readlink';
+    Test::Exception::throws_ok
+          {
+              readdir($faulty_string);
+          }
+          qr/"\\x\{d800\}" does not map to utf8/,
+          'croak on encoding error (default): readdir';
 }
 
 # Nothing on faulty utf-8
