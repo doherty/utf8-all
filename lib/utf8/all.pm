@@ -146,7 +146,7 @@ C<readdir>, and C<readlink>.
 use Encode ();
 use PerlIO::utf8_strict;
 
-our $UTF8_CHECK = Encode::FB_CROAK; # Die on encoding errors
+our $UTF8_CHECK = Encode::FB_CROAK | Encode::LEAVE_SRC; # Die on encoding errors
 
 # UTF-8 Encoding object
 my $_UTF8 = Encode::find_encoding('UTF-8');
@@ -225,6 +225,7 @@ sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
     if (not $hints->{'utf8::all'}) {
         return CORE::readdir($handle);
     } else {
+        $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
         if (wantarray) {
             return map { $_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_ } CORE::readdir($handle);
         } else {
