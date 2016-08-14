@@ -2,7 +2,7 @@
 # no utf8::all should disable its effects lexically
 # Note: Changes to @ARGV, STDIN, STDOU, and STDERR are always global!
 
-use Test::More;
+use Test::More tests => 17;
 use PerlIO;
 
 my $expected_unicode = "\x{30c6}\x{30b9}\x{30c8}"; # Unicode characters
@@ -55,5 +55,3 @@ for my $fh (keys %handles) {
     ok(grep(m/utf-?8[-_]strict/, @layers), "$fh: utf-?8[-_]strict does appear in the perlio layers")
         or diag explain { $fh => \@layers };
 }
-
-done_testing;
