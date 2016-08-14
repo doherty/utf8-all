@@ -4,7 +4,7 @@ use warnings;
 use Test::More 0.96;
 use Encode qw/find_encoding FB_CROAK LEAVE_SRC/;
 
-plan skip_all => "Skipped: $^O does not have proper utf-8 file system support"
+plan skip_all => "$^O does not have proper utf-8 file system support"
     if $^O =~ /MSWin32|cygwin|dos|os2/;
 
 mkdir "corpus/\x{307f}\x{304b}\x{3061}\x{3083}\x{3093}"

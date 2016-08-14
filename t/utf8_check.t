@@ -5,7 +5,7 @@ use Test::More;
 use Test::Warn;
 use Test::Exception;
 
-plan skip_all => "Skipped: $^O does not have proper utf-8 file system support"
+plan skip_all => "$^O does not have proper utf-8 file system support"
     if $^O =~ /MSWin32|cygwin|dos|os2/;
 
 plan tests => 6;
