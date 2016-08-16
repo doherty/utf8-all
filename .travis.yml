@@ -17,6 +17,7 @@ perl:
  - "5.24"
  - "5.24-thr"
  - "dev"
+ - "dev-thr"
 before_install:
   - eval $(curl https://travis-perl.github.io/init) --auto
 notifications:
