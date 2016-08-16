@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    version 0.020
+    version 0.021
 
 SYNOPSIS
 
@@ -88,7 +88,7 @@ ATTRIBUTES
     always enforced.
 
     Important: Only controls the handling of decoding errors in glob,
-    readdir, readlink.
+    readdir, and readlink.
 
 INTERACTION WITH AUTODIE
 

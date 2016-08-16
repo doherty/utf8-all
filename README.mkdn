@@ -4,7 +4,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.020
+version 0.021
 
 # SYNOPSIS
 
@@ -83,7 +83,7 @@ ignore them. Please see [Encode](https://metacpan.org/pod/Encode) for details. N
 _always_ enforced.
 
 Important: Only controls the handling of decoding errors in `glob`,
-`readdir`, `readlink`.
+`readdir`, and `readlink`.
 
 # INTERACTION WITH AUTODIE
 
