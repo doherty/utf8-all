@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    version 0.021
+    version 0.021_001
 
 SYNOPSIS
 
@@ -125,7 +125,7 @@ AUTHORS
 
       * Mike Doherty <doherty@cpan.org>
 
-      * Hayo Baan <hayobaan@cpan.org>
+      * Hayo Baan <info@hayobaan.com>
 
 COPYRIGHT AND LICENSE
 
