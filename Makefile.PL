@@ -8,7 +8,7 @@ use ExtUtils::MakeMaker;
 
 my %WriteMakefileArgs = (
   "ABSTRACT" => "turn on Unicode - all of it",
-  "AUTHOR" => "Michael Schwern <mschwern\@cpan.org>, Mike Doherty <doherty\@cpan.org>, Hayo Baan <hayobaan\@cpan.org>",
+  "AUTHOR" => "Michael Schwern <mschwern\@cpan.org>, Mike Doherty <doherty\@cpan.org>, Hayo Baan <info\@hayobaan.com>",
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => 0
   },
@@ -46,7 +46,7 @@ my %WriteMakefileArgs = (
     "threads::shared" => 0,
     "version" => "0.77"
   },
-  "VERSION" => "0.021",
+  "VERSION" => "0.021_001",
   "test" => {
     "TESTS" => "t/*.t"
   }

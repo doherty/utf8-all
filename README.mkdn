@@ -1,10 +1,13 @@
+[![Build Status](https://travis-ci.org/doherty/utf8-all.svg?branch=master)](https://travis-ci.org/doherty/utf8-all)
+[![Kwalitee status](http://cpants.cpanauthors.org/dist/utf8-all.png)](http://cpants.charsbar.org/dist/overview/utf8-all)
+
 # NAME
 
 utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.021
+version 0.021\_001
 
 # SYNOPSIS
 
@@ -119,7 +122,7 @@ will therefore not be replaced on these systems.
 
 - Michael Schwern <mschwern@cpan.org>
 - Mike Doherty <doherty@cpan.org>
-- Hayo Baan <hayobaan@cpan.org>
+- Hayo Baan <info@hayobaan.com>
 
 # COPYRIGHT AND LICENSE
 
