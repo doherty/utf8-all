@@ -2,6 +2,9 @@ Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
 
+0.022     2017-04-22
+  * Adpated to changes in Encode v2.89                               [HayoBaan]
+
 0.021     2016-08-16
   * Fixed: Not encoding readdir DIRHANDLE argument            [gh-35; HayoBaan]
   * Fixed: Enforcing LEAVE_SRC on $utf8::all::UTF_CHECK              [HayoBaan]
