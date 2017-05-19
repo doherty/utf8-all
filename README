@@ -33,10 +33,10 @@ DESCRIPTION
       5.16.0 and higher.
 
       * Filehandles are opened with UTF-8 encoding turned on by default
-      (including STDIN, STDOUT, STDERR). Meaning that they automatically
-      convert UTF-8 octets to characters and vice versa. If you don't want
-      UTF-8 for a particular filehandle, you'll have to set binmode
-      $filehandle.
+      (including STDIN, STDOUT, and STDERR when utf8::all is used from the
+      main package). Meaning that they automatically convert UTF-8 octets
+      to characters and vice versa. If you don't want UTF-8 for a
+      particular filehandle, you'll have to set binmode $filehandle.
 
       * @ARGV gets converted from UTF-8 octets to Unicode characters (when
       utf8::all is used from the main package). This is similar to the
@@ -44,7 +44,8 @@ DESCRIPTION
 
       * readdir, readlink, readpipe (including the qx// and backtick
       operators), and glob (including the <> operator) now all work with
-      and return Unicode characters instead of (UTF-8) octets.
+      and return Unicode characters instead of (UTF-8) octets (again only
+      when utf8::all is used from the main package).
 
  Lexical Scope
 
@@ -66,19 +67,26 @@ DESCRIPTION
     the effects.
 
     Note that the effect on @ARGV and the STDIN, STDOUT, and STDERR file
-    handles is always global!
+    handles is always global and can not be undone!
 
- Disabling Global Features
+ Enabling/Disabling Global Features
 
     As described above, the default behaviour of utf8::all is to convert
     @ARGV and to open the STDIN, STDOUT, and STDERR file handles with UTF-8
-    encoding. If you want to disable these effects, add the option
-    NO-GLOBAL (or LEXICAL-ONLY) to the use line. E.g.:
+    encoding, and override the readlink and readdir functions and glob
+    operators when utf8::all is used from the main package.
+
+    If you want to disable these features even when utf8::all is used from
+    the main package, add the option NO-GLOBAL (or LEXICAL-ONLY) to the use
+    line. E.g.:
 
         use utf8::all 'NO-GLOBAL';
 
-    Note: with the NO-GLOBAL option set, the readlink and readdir functions
-    and glob operators will not be replaced at all.
+    If on the other hand you want to enable these global effects even when
+    utf8::all was used from anothe package than main, use the option GLOBAL
+    on the use line:
+
+        use utf8::all 'GLOBAL';
 
  UTF-8 Errors
 

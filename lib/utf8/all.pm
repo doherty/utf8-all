@@ -43,7 +43,8 @@ C<5.16.0> and higher.
 =item *
 
 Filehandles are opened with UTF-8 encoding turned on by default
-(including STDIN, STDOUT, STDERR). Meaning that they automatically
+(including C<STDIN>, C<STDOUT>, and C<STDERR> when C<utf8::all> is
+used from the C<main> package). Meaning that they automatically
 convert UTF-8 octets to characters and vice versa. If you I<don't>
 want UTF-8 for a particular filehandle, you'll have to set C<binmode
 $filehandle>.
@@ -51,15 +52,16 @@ $filehandle>.
 =item *
 
 C<@ARGV> gets converted from UTF-8 octets to Unicode characters (when
-C<utf8::all> is used from the main package). This is similar to the
+C<utf8::all> is used from the C<main> package). This is similar to the
 behaviour of the C<-CA> perl command-line switch (see L<perlrun>).
 
 =item *
 
 C<readdir>, C<readlink>, C<readpipe> (including the C<qx//> and
-backtick operators), and L<C<glob>|perlfunc/glob> (including the C<< <>
->> operator) now all work with and return Unicode characters instead
-of (UTF-8) octets.
+backtick operators), and L<C<glob>|perlfunc/glob> (including the C<<
+<> >> operator) now all work with and return Unicode characters
+instead of (UTF-8) octets (again only when C<utf8::all> is used from
+the C<main> package).
 
 =back
 
@@ -83,20 +85,27 @@ Instead of lexical scoping, you can also use C<no utf8::all> to turn
 off the effects.
 
 Note that the effect on C<@ARGV> and the C<STDIN>, C<STDOUT>, and
-C<STDERR> file handles is always global!
+C<STDERR> file handles is always global and can not be undone!
 
-=head2 Disabling Global Features
+=head2 Enabling/Disabling Global Features
 
 As described above, the default behaviour of C<utf8::all> is to
 convert C<@ARGV> and to open the C<STDIN>, C<STDOUT>, and C<STDERR>
-file handles with UTF-8 encoding. If you want to disable these
-effects, add the option C<NO-GLOBAL> (or C<LEXICAL-ONLY>) to the use
-line. E.g.:
+file handles with UTF-8 encoding, and override the C<readlink> and
+C<readdir> functions and C<glob> operators when C<utf8::all> is used
+from the C<main> package.
+
+If you want to disable these features even when C<utf8::all> is used
+from the C<main> package, add the option C<NO-GLOBAL> (or
+C<LEXICAL-ONLY>) to the use line. E.g.:
 
     use utf8::all 'NO-GLOBAL';
 
-Note: with the C<NO-GLOBAL> option set, the C<readlink> and C<readdir>
-functions and C<glob> operators will not be replaced at all.
+If on the other hand you want to enable these global effects even when
+C<utf8::all> was used from another package than C<main>, use the
+option C<GLOBAL> on the use line:
+
+    use utf8::all 'GLOBAL';
 
 =head2 UTF-8 Errors
 
@@ -165,12 +174,17 @@ our $UTF8_CHECK = Encode::FB_CROAK | Encode::LEAVE_SRC; # Die on encoding errors
 my $_UTF8 = Encode::find_encoding('UTF-8');
 
 sub import {
-    # Running with NO-GLOBAL option?
-    my $no_global = defined $_[1] && $_[1] =~ /^(?:NO-GLOBALS?|LEXICAL-ONLY)$/i;
-    splice(@_, 1, 1) if $no_global;
-
     # Enable features/pragmas in calling package
     my $target = caller;
+
+    # Enable global effects be default only when imported from main package
+    my $no_global = $target ne 'main';
+
+    # Override global?
+    if (defined $_[1] && $_[1] =~ /^(?:(NO-)?GLOBAL|LEXICAL-ONLY)$/i) {
+        $no_global = $_[1] !~ /^GLOBAL$/i;
+        splice(@_, 1, 1); # Remove option from import's arguments
+    }
 
     'utf8'->import::into($target);
     'open'->import::into($target, 'IO' => ':utf8_strict');
@@ -205,13 +219,14 @@ sub import {
         $^H{'utf8::all'} = 1;
     }
 
-    # Make @ARGV utf-8 when called from the main package, unless perl was launched
-    # with the -CA flag as this already has @ARGV decoded automatically.
-    # -CA is active if the the fifth bit (32) of the ${^UNICODE} variable is set.
-    # (see perlrun on the -C command switch for details about ${^UNICODE})
+    # Make @ARGV utf-8 when, unless perl was launched with the -CA
+    # flag as this already has @ARGV decoded automatically.  -CA is
+    # active if the the fifth bit (32) of the ${^UNICODE} variable is
+    # set.  (see perlrun on the -C command switch for details about
+    # ${^UNICODE})
     unless ($no_global || (${^UNICODE} & 32)) {
         state $have_encoded_argv = 0;
-        if ($target eq 'main' && !$have_encoded_argv++) {
+        if (!$have_encoded_argv++) {
             $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
             $_ = ($_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_) for @ARGV;
         }
