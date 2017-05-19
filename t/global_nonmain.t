@@ -1,5 +1,5 @@
 #!perl
-# Test that ust8::all with NO-GLOBAL does not change @ARGV, STDIN, STDOUT, STDERR
+# Test that ust8::all from non-main package does not change @ARGV, STDIN, STDOUT, STDERR
 use strict;
 use warnings;
 
@@ -8,7 +8,9 @@ BEGIN {
     @ARGV = qw(føø bar bāz テスト);
 }
 
-use utf8::all 'NO-GLOBAL';
+package not_main;
+
+use utf8::all;
 use PerlIO;
 use Test::More;
 
