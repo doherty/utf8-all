@@ -83,8 +83,8 @@ DESCRIPTION
         use utf8::all 'NO-GLOBAL';
 
     If on the other hand you want to enable these global effects even when
-    utf8::all was used from anothe package than main, use the option GLOBAL
-    on the use line:
+    utf8::all was used from another package than main, use the option
+    GLOBAL on the use line:
 
         use utf8::all 'GLOBAL';
 
