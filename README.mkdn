@@ -7,7 +7,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.022
+version 0.023
 
 # SYNOPSIS
 
@@ -65,6 +65,19 @@ off the effects.
 
 Note that the effect on `@ARGV` and the `STDIN`, `STDOUT`, and
 `STDERR` file handles is always global!
+
+## Disabling Global Features
+
+As described above, the default behaviour of `utf8::all` is to
+convert `@ARGV` and to open the `STDIN`, `STDOUT`, and `STDERR`
+file handles with UTF-8 encoding. If you want to disable these
+effects, add the option `NO-GLOBAL` (or `LEXICAL-ONLY`) to the use
+line. E.g.:
+
+    use utf8::all 'NO-GLOBAL';
+
+Note: with the `NO-GLOBAL` option set, the `readlink` and `readdir`
+functions and `glob` operators will not be replaced at all.
 
 ## UTF-8 Errors
 

@@ -85,6 +85,19 @@ off the effects.
 Note that the effect on C<@ARGV> and the C<STDIN>, C<STDOUT>, and
 C<STDERR> file handles is always global!
 
+=head2 Disabling Global Features
+
+As described above, the default behaviour of C<utf8::all> is to
+convert C<@ARGV> and to open the C<STDIN>, C<STDOUT>, and C<STDERR>
+file handles with UTF-8 encoding. If you want to disable these
+effects, add the option C<NO-GLOBAL> (or C<LEXICAL-ONLY>) to the use
+line. E.g.:
+
+    use utf8::all 'NO-GLOBAL';
+
+Note: with the C<NO-GLOBAL> option set, the C<readlink> and C<readdir>
+functions and C<glob> operators will not be replaced at all.
+
 =head2 UTF-8 Errors
 
 C<utf8::all> will handle invalid code points (i.e., utf-8 that does
@@ -152,6 +165,10 @@ our $UTF8_CHECK = Encode::FB_CROAK | Encode::LEAVE_SRC; # Die on encoding errors
 my $_UTF8 = Encode::find_encoding('UTF-8');
 
 sub import {
+    # Running with NO-GLOBAL option?
+    my $no_global = defined $_[1] && $_[1] =~ /^(?:NO-GLOBALS?|LEXICAL-ONLY)$/i;
+    splice(@_, 1, 1) if $no_global;
+
     # Enable features/pragmas in calling package
     my $target = caller;
 
@@ -160,7 +177,7 @@ sub import {
 
     # use open ':std' only works with some encodings.
     state $have_encoded_std = 0;
-    if (!$have_encoded_std++) {
+    unless ($no_global || $have_encoded_std++) {
         binmode STDERR, ':utf8_strict';
         binmode STDOUT, ':utf8_strict';
         binmode STDIN,  ':utf8_strict';
@@ -171,7 +188,7 @@ sub import {
     'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
     'feature'->import::into($target, qw{unicode_eval fc}) if $^V >= v5.16.0;
 
-    unless ($^O =~ /MSWin32|cygwin|dos|os2/) {
+    unless ($no_global || $^O =~ /MSWin32|cygwin|dos|os2/) {
         no strict qw(refs); ## no critic (TestingAndDebugging::ProhibitNoStrict)
         no warnings qw(redefine);
 
@@ -192,7 +209,7 @@ sub import {
     # with the -CA flag as this already has @ARGV decoded automatically.
     # -CA is active if the the fifth bit (32) of the ${^UNICODE} variable is set.
     # (see perlrun on the -C command switch for details about ${^UNICODE})
-    if (!(${^UNICODE} & 32)) {
+    unless ($no_global || (${^UNICODE} & 32)) {
         state $have_encoded_argv = 0;
         if ($target eq 'main' && !$have_encoded_argv++) {
             $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
@@ -213,7 +230,9 @@ sub unimport { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
     'utf8'->unimport::out_of($target);
     'open'->import::into($target, qw{IO :bytes});
 
-    $^H{'utf8::all'} = 0; # Reset compiler hint
+    unless ($^O =~ /MSWin32|cygwin|dos|os2/) {
+        $^H{'utf8::all'} = 0; # Reset compiler hint
+    }
 
     return;
 }

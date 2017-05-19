@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+  * Added option to disable global effects                    [gh-47; HayoBaan]
 
 0.022     2017-04-22
   * Adpated to changes in Encode v2.89                               [HayoBaan]
