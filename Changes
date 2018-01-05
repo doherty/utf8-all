@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.024     2018-01-05
   * Adapted force_global test to work when the perl unicode flag is active
                                                               [gh-48; HayoBaan]
 
