@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+  * Adpated to use gmake instead of dmake
 
 0.024     2018-01-05
   * Adapted force_global test to work when the perl unicode flag is active
