@@ -58,7 +58,7 @@ behaviour of the C<-CA> perl command-line switch (see L<perlrun>).
 
 =item *
 
-C<%ENV> gets tied to a C<Tie::StdHash> based object that decodes UTF-8 
+C<%ENV> gets tied to a C<Tie::StdHash> based object that decodes UTF-8
 in Environment Variables to Unicode characters.
 
 =item *
@@ -239,10 +239,10 @@ sub import {
     }
 
 
-	#Parse %ENV and decode any UTF-8 byte strings.
-	unless ($no_global) {
-		tie %ENV, "utf8::all::TieENV", %ENV;
-	}
+    #Parse %ENV and decode any UTF-8 byte strings.
+    unless ($no_global) {
+        tie %ENV, "utf8::all::TieENV", %ENV;
+    }
 
 
     return;
@@ -262,8 +262,8 @@ sub unimport { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
         $^H{'utf8::all'} = 0; # Reset compiler hint
     }
 
-	#Restore %ENV
-	untie %ENV;
+    #Restore %ENV
+    untie %ENV;
 
     return;
 }
@@ -336,18 +336,18 @@ use Tie::Hash;
 use base 'Tie::StdHash';
 
 sub TIEHASH {
-	my $class = shift;
-	my $self = bless {}, $class;
-	while( my ($k, $v) = splice @_, 0, 2 ) {
-		$self->{$k} = $v;
-	}
+    my $class = shift;
+    my $self = bless {}, $class;
+    while( my ($k, $v) = splice @_, 0, 2 ) {
+        $self->{$k} = $v;
+    }
 
-	return $self;
+    return $self;
 }
 
 sub FETCH {
-	my $self = shift;
-	my $value = $self->SUPER::FETCH(@_);
-	return $value ? $_UTF8->decode($value, $utf8::all::UTF8_CHECK) : $value;
+    my $self = shift;
+    my $value = $self->SUPER::FETCH(@_);
+    return $value ? $_UTF8->decode($value, $utf8::all::UTF8_CHECK) : $value;
 }
 1;
