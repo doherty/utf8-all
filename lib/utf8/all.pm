@@ -55,6 +55,12 @@ C<@ARGV> gets converted from UTF-8 octets to Unicode characters (when
 C<utf8::all> is used from the C<main> package). This is similar to the
 behaviour of the C<-CA> perl command-line switch (see L<perlrun>).
 
+
+=item *
+
+C<%ENV> gets tied to a C<Tie::StdHash> based object that decodes UTF-8 
+in Environment Variables to Unicode characters.
+
 =item *
 
 C<readdir>, C<readlink>, C<readpipe> (including the C<qx//> and
@@ -90,10 +96,10 @@ C<STDERR> file handles is always global and can not be undone!
 =head2 Enabling/Disabling Global Features
 
 As described above, the default behaviour of C<utf8::all> is to
-convert C<@ARGV> and to open the C<STDIN>, C<STDOUT>, and C<STDERR>
-file handles with UTF-8 encoding, and override the C<readlink> and
-C<readdir> functions and C<glob> operators when C<utf8::all> is used
-from the C<main> package.
+convert C<@ARGV> and to open the C<STDIN>, C<STDOUT>, and 
+C<STDERR> file handles with UTF-8 encoding, and override the C<readlink> and
+C<readdir> functions and C<glob> operatorsi, and tie C<%ENV> to handle UTF-8 in
+Environment variables when C<utf8::all> is used from the C<main> package.
 
 If you want to disable these features even when C<utf8::all> is used
 from the C<main> package, add the option C<NO-GLOBAL> (or
@@ -340,5 +346,5 @@ sub FETCH {
 	my $self = shift;
 	my $value = $self->SUPER::FETCH(@_);
 	return $value ? $_UTF8->decode($value, $utf8::all::UTF8_CHECK) : $value;
-}	
+}
 1;
