@@ -232,6 +232,13 @@ sub import {
         }
     }
 
+
+	#Parse %ENV and decode any UTF-8 byte strings.
+	unless ($no_global) {
+		tie %ENV, "utf8::all::TieENV", %ENV;
+	}
+
+
     return;
 }
 
@@ -311,4 +318,27 @@ pragma. See L<RT
 
 =cut
 
+
+package utf8::all::TieENV;
+
+use strict;
+use warnings;
+use Tie::Hash;
+use base 'Tie::StdHash';
+
+sub TIEHASH {
+	my $class = shift;
+	my $self = bless {}, $class;
+	while( my ($k, $v) = splice @_, 0, 2 ) {
+		$self->{$k} = $v;
+	}
+
+	return $self;
+}
+
+sub FETCH {
+	my $self = shift;
+	my $value = $self->SUPER::FETCH(@_);
+	return $value ? $_UTF8->decode($value, $utf8::all::UTF8_CHECK) : $value;
+}	
 1;
