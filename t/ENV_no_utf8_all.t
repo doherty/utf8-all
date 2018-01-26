@@ -5,7 +5,7 @@ use warnings;
 
 use Encode;
 
-use Test::More tests => 1;
+use Test::More tests => 12;
 
 # føø
 local $ENV{FOO} = join '', map {chr $_} ( 0x66, 0xc3, 0xb8, 0xc3, 0xb8 );
@@ -19,7 +19,10 @@ local $ENV{BAZ} = join '', map {chr $_} ( 0x62, 0xc4, 0x81, 0x7a );
 # テスト
 local $ENV{BOO} = join '', map {chr $_} (0xe3, 0x83, 0x86, 0xe3, 0x82, 0xb9, 0xe3, 0x83, 0x88);
 
-subtest 'ENV is not converted to Perl UTF8' => sub {
+use utf8::all;
+
+{
+	no utf8::all;
 	
 	# føø bar bāz テスト but now as unicode characters
 	is($ENV{FOO}, "\x{66}\x{c3}\x{b8}\x{c3}\x{b8}", "ENV{FOO} $ENV{FOO} is not unicode characters instead of utf-8 octets");
@@ -38,5 +41,5 @@ subtest 'ENV is not converted to Perl UTF8' => sub {
 	is(length($ENV{BOO}), 9, "string is seen as 9 char bytes when not seen as utf-8");
 	ok(!Encode::is_utf8($ENV{BOO}), "String is not seen as Perl Internal UTF-8");
 
-};
+}
 

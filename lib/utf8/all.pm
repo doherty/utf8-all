@@ -262,6 +262,9 @@ sub unimport { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
         $^H{'utf8::all'} = 0; # Reset compiler hint
     }
 
+	#Restore %ENV
+	untie %ENV;
+
     return;
 }
 
