@@ -1,6 +1,7 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+  * Force use of archive-tar to prevent issues on MacOs
   * Adpated to use gmake instead of dmake
 
 0.024     2018-01-05
