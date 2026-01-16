@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/doherty/utf8-all.svg?branch=master)](https://travis-ci.org/doherty/utf8-all)
-[![Kwalitee status](http://cpants.cpanauthors.org/dist/utf8-all.png)](http://cpants.charsbar.org/dist/overview/utf8-all)
+[![Kwalitee status](https://cpants.cpanauthors.org/dist/utf8-all.png)](https://cpants.cpanauthors.org/dist/utf8-all)
 
 # NAME
 
@@ -7,7 +7,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.024
+version 0.025
 
 # SYNOPSIS
 
@@ -137,8 +137,8 @@ will therefore not be replaced on these systems.
 
 # SEE ALSO
 
-- [File::Find::utf8](https://metacpan.org/pod/File::Find::utf8) for fully utf-8 aware File::Find functions.
-- [Cwd::utf8](https://metacpan.org/pod/Cwd::utf8) for fully utf-8 aware Cwd functions.
+- [File::Find::utf8](https://metacpan.org/pod/File%3A%3AFind%3A%3Autf8) for fully utf-8 aware File::Find functions.
+- [Cwd::utf8](https://metacpan.org/pod/Cwd%3A%3Autf8) for fully utf-8 aware Cwd functions.
 
 # AUTHORS
 

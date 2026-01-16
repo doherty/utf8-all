@@ -1,6 +1,8 @@
 Revision history for Perl module {{$dist->name}}
 
 {{$NEXT}}
+
+0.025     2026-01-16
   * Force use of archive-tar to prevent issues on MacOs
   * Adpated to use gmake instead of dmake
 
