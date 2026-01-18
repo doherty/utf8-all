@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/doherty/utf8-all.svg?branch=master)](https://travis-ci.org/doherty/utf8-all)
 [![Kwalitee status](https://cpants.cpanauthors.org/dist/utf8-all.png)](https://cpants.cpanauthors.org/dist/utf8-all)
 
 # NAME
@@ -7,7 +6,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.025
+version 0.026
 
 # SYNOPSIS
 
