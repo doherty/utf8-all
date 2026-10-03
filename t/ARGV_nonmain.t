@@ -6,7 +6,7 @@ BEGIN {
     @ARGV = qw(føø bar bāz テスト);
 }
 
-package not_main;
+package NonMain;
 
 use utf8::all;
 use Test::More tests => 1;

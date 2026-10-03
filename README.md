@@ -6,7 +6,7 @@ utf8::all - turn on Unicode - all of it
 
 # VERSION
 
-version 0.026
+version 0.026\_001
 
 # SYNOPSIS
 
@@ -39,7 +39,7 @@ want UTF-8 for a particular filehandle, you'll have to set `binmode
 $filehandle`.
 - `@ARGV` gets converted from UTF-8 octets to Unicode characters (when
 `utf8::all` is used from the `main` package). This is similar to the
-behaviour of the `-CA` perl command-line switch (see [perlrun](https://metacpan.org/pod/perlrun)).
+behavior of the `-CA` perl command-line switch (see [perlrun](https://metacpan.org/pod/perlrun)).
 - `readdir`, `readlink`, `readpipe` (including the `qx//` and
 backtick operators), and [`glob`](https://metacpan.org/pod/perlfunc#glob) (including the `<>` operator) now all work with and return Unicode characters
 instead of (UTF-8) octets (again only when `utf8::all` is used from
@@ -69,7 +69,7 @@ Note that the effect on `@ARGV` and the `STDIN`, `STDOUT`, and
 
 ## Enabling/Disabling Global Features
 
-As described above, the default behaviour of `utf8::all` is to
+As described above, the default behavior of `utf8::all` is to
 convert `@ARGV` and to open the `STDIN`, `STDOUT`, and `STDERR`
 file handles with UTF-8 encoding, and override the `readlink` and
 `readdir` functions and `glob` operators when `utf8::all` is used
@@ -93,7 +93,7 @@ option `GLOBAL` on the use line:
 not map to a valid unicode "character"), as a fatal error.
 
 For `glob`, `readdir`, and `readlink`, one can change this
-behaviour by setting the attribute ["$utf8::all::UTF8\_CHECK"](#utf8-all-utf8_check).
+behavior by setting the attribute ["$utf8::all::UTF8\_CHECK"](#utf8-all-utf8_check).
 
 # ATTRIBUTES
 

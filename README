@@ -4,7 +4,7 @@ NAME
 
 VERSION
 
-    version 0.026
+    version 0.026_001
 
 SYNOPSIS
 
@@ -40,7 +40,7 @@ DESCRIPTION
 
       * @ARGV gets converted from UTF-8 octets to Unicode characters (when
       utf8::all is used from the main package). This is similar to the
-      behaviour of the -CA perl command-line switch (see perlrun).
+      behavior of the -CA perl command-line switch (see perlrun).
 
       * readdir, readlink, readpipe (including the qx// and backtick
       operators), and glob (including the <> operator) now all work with
@@ -71,7 +71,7 @@ DESCRIPTION
 
  Enabling/Disabling Global Features
 
-    As described above, the default behaviour of utf8::all is to convert
+    As described above, the default behavior of utf8::all is to convert
     @ARGV and to open the STDIN, STDOUT, and STDERR file handles with UTF-8
     encoding, and override the readlink and readdir functions and glob
     operators when utf8::all is used from the main package.
@@ -93,7 +93,7 @@ DESCRIPTION
     utf8::all will handle invalid code points (i.e., utf-8 that does not
     map to a valid unicode "character"), as a fatal error.
 
-    For glob, readdir, and readlink, one can change this behaviour by
+    For glob, readdir, and readlink, one can change this behavior by
     setting the attribute "$utf8::all::UTF8_CHECK".
 
 ATTRIBUTES

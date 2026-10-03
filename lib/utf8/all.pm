@@ -53,7 +53,7 @@ $filehandle>.
 
 C<@ARGV> gets converted from UTF-8 octets to Unicode characters (when
 C<utf8::all> is used from the C<main> package). This is similar to the
-behaviour of the C<-CA> perl command-line switch (see L<perlrun>).
+behavior of the C<-CA> perl command-line switch (see L<perlrun>).
 
 =item *
 
@@ -89,7 +89,7 @@ C<STDERR> file handles is always global and can not be undone!
 
 =head2 Enabling/Disabling Global Features
 
-As described above, the default behaviour of C<utf8::all> is to
+As described above, the default behavior of C<utf8::all> is to
 convert C<@ARGV> and to open the C<STDIN>, C<STDOUT>, and C<STDERR>
 file handles with UTF-8 encoding, and override the C<readlink> and
 C<readdir> functions and C<glob> operators when C<utf8::all> is used
@@ -113,7 +113,7 @@ C<utf8::all> will handle invalid code points (i.e., utf-8 that does
 not map to a valid unicode "character"), as a fatal error.
 
 For C<glob>, C<readdir>, and C<readlink>, one can change this
-behaviour by setting the attribute L</"$utf8::all::UTF8_CHECK">.
+behavior by setting the attribute L</"$utf8::all::UTF8_CHECK">.
 
 =head1 COMPATIBILITY
 

@@ -1,5 +1,5 @@
 #!perl
-# Test that ust8::all from non-main package does not change @ARGV, STDIN, STDOUT, STDERR
+# Test that utf8::all from non-main package does not change @ARGV, STDIN, STDOUT, STDERR
 use strict;
 use warnings;
 
@@ -8,7 +8,7 @@ BEGIN {
     @ARGV = qw(føø bar bāz テスト);
 }
 
-package not_main;
+package NonMain;
 
 use utf8::all;
 use PerlIO;
