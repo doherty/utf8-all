@@ -143,7 +143,7 @@ will therefore not be replaced on these systems.
 
 - Michael Schwern <mschwern@cpan.org>
 - Mike Doherty <doherty@cpan.org>
-- Hayo Baan <info@hayobaan.com>
+- Hayo Baan (it at hayobaan.nl)
 
 # COPYRIGHT AND LICENSE
 
