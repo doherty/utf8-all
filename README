@@ -141,16 +141,16 @@ SEE ALSO
 
 AUTHORS
 
-      * Michael Schwern <mschwern@cpan.org>
+      * Michael Schwern (mschwern at cpan.org)
 
-      * Mike Doherty <doherty@cpan.org>
+      * Mike Doherty (doherty at cpan.org)
 
       * Hayo Baan (it at hayobaan.nl)
 
 COPYRIGHT AND LICENSE
 
-    This software is copyright (c) 2009 by Michael Schwern
-    <mschwern@cpan.org>; he originated it.
+    This software is copyright (c) 2009–2026 by Michael Schwern (mschwern
+    at cpan.org); he originated it.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as the Perl 5 programming language system itself.
