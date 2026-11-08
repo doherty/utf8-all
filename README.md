@@ -18,37 +18,33 @@ version 0.026\_001
 
 # DESCRIPTION
 
-The `use utf8` pragma tells the Perl parser to allow UTF-8 in the
-program text in the current lexical scope. This also means that you
-can now use literal Unicode characters as part of strings, variable
-names, and regular expressions.
+The `use utf8` pragma tells the Perl parser to allow UTF-8 in the program text in the current
+lexical scope. This also means that you can now use literal Unicode characters as part of strings,
+variable names, and regular expressions.
 
 `utf8::all` goes further:
 
-- [`charnames`](https://metacpan.org/pod/charnames) are imported so `\N{...}` sequences can be
-used to compile Unicode characters based on names.
-- On Perl `v5.11.0` or higher, the `use feature 'unicode_strings'` is
-enabled.
-- `use feature fc` and `use feature unicode_eval` are enabled on Perl
-`5.16.0` and higher.
-- Filehandles are opened with UTF-8 encoding turned on by default
-(including `STDIN`, `STDOUT`, and `STDERR` when `utf8::all` is
-used from the `main` package). Meaning that they automatically
-convert UTF-8 octets to characters and vice versa. If you _don't_
-want UTF-8 for a particular filehandle, you'll have to set `binmode
-$filehandle`.
-- `@ARGV` gets converted from UTF-8 octets to Unicode characters (when
-`utf8::all` is used from the `main` package). This is similar to the
-behavior of the `-CA` perl command-line switch (see [perlrun](https://metacpan.org/pod/perlrun)).
-- `readdir`, `readlink`, `readpipe` (including the `qx//` and
-backtick operators), and [`glob`](https://metacpan.org/pod/perlfunc#glob) (including the `<>` operator) now all work with and return Unicode characters
-instead of (UTF-8) octets (again only when `utf8::all` is used from
-the `main` package).
+- [`charnames`](https://metacpan.org/pod/charnames) are imported so `\N{...}` sequences can be used to compile Unicode
+characters based on names.
+- On Perl `v5.11.0` or higher, the `use feature 'unicode_strings'` is enabled.
+- `use feature fc` and `use feature unicode_eval` are enabled on Perl `5.16.0` and higher.
+- Filehandles are opened with UTF-8 encoding turned on by default (including `STDIN`, `STDOUT`, and
+`STDERR` when `utf8::all` is used from the `main` package). Meaning that they automatically
+convert UTF-8 octets to characters and vice versa. If you _don't_ want UTF-8 for a particular
+filehandle, you'll have to set `binmode $filehandle`.
+- `@ARGV` gets converted from UTF-8 octets to Unicode characters (when `utf8::all` is used from the
+`main` package). This is similar to the behavior of the `-CA` perl command-line switch (see
+[perlrun](https://metacpan.org/pod/perlrun)).
+- The following now all work with and return Unicode characters instead of (UTF-8) octets, again only
+when `utf8::all` is used from the `main` package:
+    - `readdir`
+    - `readlink`
+    - `readpipe`, including the `qx//` and backtick operators
+    - [`glob`](https://metacpan.org/pod/perlfunc#glob), including the `<>` operator
 
 ## Lexical Scope
 
-The pragma is lexically-scoped, so you can do the following if you had
-some reason to:
+The pragma is lexically-scoped, so you can do the following if you had some reason to:
 
     {
         use utf8::all;
@@ -61,61 +57,55 @@ some reason to:
     my $text = do { local $/; <$in>};
     print length $text, "\n";         # 10, not 7!
 
-Instead of lexical scoping, you can also use `no utf8::all` to turn
-off the effects.
+Instead of lexical scoping, you can also use `no utf8::all` to turn off the effects.
 
-Note that the effect on `@ARGV` and the `STDIN`, `STDOUT`, and
-`STDERR` file handles is always global and can not be undone!
+Note that the effect on `@ARGV` and the `STDIN`, `STDOUT`, and `STDERR` file handles is always
+global and can not be undone!
 
 ## Enabling/Disabling Global Features
 
-As described above, the default behavior of `utf8::all` is to
-convert `@ARGV` and to open the `STDIN`, `STDOUT`, and `STDERR`
-file handles with UTF-8 encoding, and override the `readlink` and
-`readdir` functions and `glob` operators when `utf8::all` is used
-from the `main` package.
+As described above, the default behavior of `utf8::all` is to:
 
-If you want to disable these features even when `utf8::all` is used
-from the `main` package, add the option `NO-GLOBAL` (or
-`LEXICAL-ONLY`) to the use line. E.g.:
+- convert `@ARGV`
+- open the `STDIN`, `STDOUT`, and `STDERR` file handles with UTF-8 encoding
+- override the `readlink` and `readdir` functions and `glob` operators when `utf8::all` is
+used from the `main` package
+
+If you want to disable these features even when `utf8::all` is used from the `main` package, add
+the option `NO-GLOBAL` (or `LEXICAL-ONLY`) to the use line. E.g.:
 
     use utf8::all 'NO-GLOBAL';
 
-If on the other hand you want to enable these global effects even when
-`utf8::all` was used from another package than `main`, use the
-option `GLOBAL` on the use line:
+If on the other hand you want to enable these global effects even when `utf8::all` was used from
+another package than `main`, use the option `GLOBAL` on the use line:
 
     use utf8::all 'GLOBAL';
 
 ## UTF-8 Errors
 
-`utf8::all` will handle invalid code points (i.e., utf-8 that does
-not map to a valid unicode "character"), as a fatal error.
+`utf8::all` will handle invalid code points (i.e., utf-8 that does not map to a valid unicode
+"character"), as a fatal error.
 
-For `glob`, `readdir`, and `readlink`, one can change this
-behavior by setting the attribute ["$utf8::all::UTF8\_CHECK"](#utf8-all-utf8_check).
+For `glob`, `readdir`, and `readlink`, one can change this behavior by setting the attribute
+["$utf8::all::UTF8\_CHECK"](#utf8-all-utf8_check).
 
 # ATTRIBUTES
 
 ## $utf8::all::UTF8\_CHECK
 
-By default `utf8::all` marks decoding errors as fatal (default value
-for this setting is `Encode::FB_CROAK`). If you want, you can change this by
-setting `$utf8::all::UTF8_CHECK`. The value `Encode::FB_WARN` reports
-the encoding errors as warnings, and `Encode::FB_DEFAULT` will completely
-ignore them. Please see [Encode](https://metacpan.org/pod/Encode) for details. Note: `Encode::LEAVE_SRC` is
-_always_ enforced.
+By default `utf8::all` marks decoding errors as fatal (default value for this setting is
+`Encode::FB_CROAK`). If you want, you can change this by setting `$utf8::all::UTF8_CHECK`. The
+value `Encode::FB_WARN` reports the encoding errors as warnings, and `Encode::FB_DEFAULT` will
+completely ignore them. Please see [Encode](https://metacpan.org/pod/Encode) for details. Note: `Encode::LEAVE_SRC` is _always_
+enforced.
 
-Important: Only controls the handling of decoding errors in `glob`,
-`readdir`, and `readlink`.
+Important: Only controls the handling of decoding errors in `glob`, `readdir`, and `readlink`.
 
 # INTERACTION WITH AUTODIE
 
-If you use [autodie](https://metacpan.org/pod/autodie), which is a great idea, you need to use at least
-version **2.12**, released on [June 26,
-2012](https://metacpan.org/source/PJF/autodie-2.12/Changes#L3).
-Otherwise, autodie obliterates the IO layers set by the [open](https://metacpan.org/pod/open)
-pragma. See [RT
+If you use [autodie](https://metacpan.org/pod/autodie), which is a great idea, you need to use at least version **2.12**, released on
+[June 26, 2012](https://metacpan.org/source/PJF/autodie-2.12/Changes#L3). Otherwise, autodie
+obliterates the IO layers set by the [open](https://metacpan.org/pod/open) pragma. See [RT
 \#54777](https://rt.cpan.org/Ticket/Display.html?id=54777) and [GH
 \#7](https://github.com/doherty/utf8-all/issues/7).
 
@@ -130,9 +120,8 @@ feature.
 
 # COMPATIBILITY
 
-The filesystems of Dos, Windows, and OS/2 do not (fully) support
-UTF-8. The `readlink` and `readdir` functions and `glob` operators
-will therefore not be replaced on these systems.
+The filesystems of Dos, Windows, and OS/2 do not (fully) support UTF-8. The `readlink` and
+`readdir` functions and `glob` operators will therefore not be replaced on these systems.
 
 # SEE ALSO
 

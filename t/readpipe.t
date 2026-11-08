@@ -33,8 +33,8 @@ sub test_res {
 
     is sort_res($utf8_result) => sort_res($expected), "$test utf8 result should be as expected";
   SKIP: {
-        # If we have the Perl Unicode flag set that adds the UTF-8 layer,
-        # we need to skip these tests.
+        # If we have the Perl Unicode flag set that adds the UTF-8 layer, we need to skip these
+        # tests.
         skip 'Perl Unicode flag set that always adds UTF-8 layer to input', 2 if (${^UNICODE} & 8);
 
         is $result => $_UTF8->encode($utf8_result, FB_CROAK | LEAVE_SRC), "$test encoded utf8 result matches non-utf8";

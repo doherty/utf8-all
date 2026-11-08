@@ -14,9 +14,8 @@ use Test::More;
 
 
 SKIP: {
-        # If we run with the Perl Unicode flag to automatically
-        # convert the command-line arguments to unicode characters,
-        # we need to skip this test
+        # If we run with the Perl Unicode flag to automatically convert the command-line arguments
+        # to unicode characters, we need to skip this test
     skip 'Perl Unicode flag set to automatically convert command-line arguments', 1 if (${^UNICODE} & 32);
     # føø bar bāz テスト still as utf-8 encoded octets
     is_deeply \@ARGV => [
@@ -32,8 +31,7 @@ my $utf8_flag = 1;
 for my $fh (*STDIN, *STDOUT, *STDERR) {
     my @layers = PerlIO::get_layers($fh);
   SKIP: {
-        # If we have the Perl Unicode flag set that adds the UTF-8 layer,
-        # we need to skip this test.
+        # If we have the Perl Unicode flag set that adds the UTF-8 layer, we need to skip this test.
         skip 'Perl Unicode flag set that always adds UTF-8 layer', 1 if (${^UNICODE} & $utf8_flag);
         ok(!grep(/utf8/, @layers), q{utf8 does not appear in perlio layers})
         or diag explain { $fh => \@layers };

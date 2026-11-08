@@ -42,10 +42,17 @@ DESCRIPTION
       utf8::all is used from the main package). This is similar to the
       behavior of the -CA perl command-line switch (see perlrun).
 
-      * readdir, readlink, readpipe (including the qx// and backtick
-      operators), and glob (including the <> operator) now all work with
-      and return Unicode characters instead of (UTF-8) octets (again only
-      when utf8::all is used from the main package).
+      * The following now all work with and return Unicode characters
+      instead of (UTF-8) octets, again only when utf8::all is used from the
+      main package:
+
+	* readdir
+
+	* readlink
+
+	* readpipe, including the qx// and backtick operators
+
+	* glob, including the <> operator
 
  Lexical Scope
 
@@ -71,10 +78,14 @@ DESCRIPTION
 
  Enabling/Disabling Global Features
 
-    As described above, the default behavior of utf8::all is to convert
-    @ARGV and to open the STDIN, STDOUT, and STDERR file handles with UTF-8
-    encoding, and override the readlink and readdir functions and glob
-    operators when utf8::all is used from the main package.
+    As described above, the default behavior of utf8::all is to:
+
+      * convert @ARGV
+
+      * open the STDIN, STDOUT, and STDERR file handles with UTF-8 encoding
+
+      * override the readlink and readdir functions and glob operators when
+      utf8::all is used from the main package
 
     If you want to disable these features even when utf8::all is used from
     the main package, add the option NO-GLOBAL (or LEXICAL-ONLY) to the use

@@ -91,3 +91,32 @@ delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
   unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
 
 WriteMakefile(%WriteMakefileArgs);
+
+# Each man page gets a pod2man command of its own, so it names its manual, the
+# script or module with the version, and the date of the release. Added by
+# Dist::Zilla::Plugin::Author::HAYOBAAN::ManPages.
+{
+    package MY;
+
+    sub manifypods {
+        my ($self) = @_;
+
+        my $date = '2026-11-08';
+        my %center_of = (1 => 'User Commands', 3 => 'Perl Programmers Reference Guide');
+        my (@pods, @commands);
+        for my $section (1, 3) {
+            my $pods = $self->{"MAN${section}PODS"} || {};
+            for my $pod (sort keys %$pods) {
+                # The man page is e.g. $(INST_MAN1DIR)/imageList.$(MAN1EXT)
+                (my $name = $pods->{$pod}) =~ s{^.*/|\.\$\(MAN\dEXT\)$}{}g;
+                push @pods, $pod;
+                push @commands, "\t\$(NOECHO) \$(POD2MAN) --section=\$(MAN${section}SECTION) --perm_rw=\$(PERM_RW) -u"
+                    . qq{ --center="$center_of{$section}" --release="$name \$(VERSION)" --date=$date}
+                    . " $pod $pods->{$pod}";
+            }
+        }
+        # The POD2MAN macro, as MakeMaker's own manifypods defines it, and the target
+        return $self->POD2MAN_macro . "\nmanifypods : pure_all config " . join(' ', @pods) . "\n"
+            . (@commands ? join("\n", @commands) : "\t\$(NOECHO) \$(NOOP)") . "\n";
+    }
+}

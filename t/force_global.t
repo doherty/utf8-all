@@ -15,9 +15,8 @@ use PerlIO;
 use Test::More;
 
 SKIP: {
-        # If we run with the Perl Unicode flag to automatically
-        # convert the command-line arguments to unicode characters,
-        # we need to skip this test
+        # If we run with the Perl Unicode flag to automatically convert the command-line arguments
+        # to unicode characters, we need to skip this test
     skip 'Perl Unicode flag set to automatically convert command-line arguments', 1 if (${^UNICODE} & 32);
     # føø bar bāz テスト but now as unicode characters
     is_deeply \@ARGV => [

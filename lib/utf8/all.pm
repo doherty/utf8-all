@@ -16,10 +16,9 @@ use 5.010; # state
 
 =head1 DESCRIPTION
 
-The C<use utf8> pragma tells the Perl parser to allow UTF-8 in the
-program text in the current lexical scope. This also means that you
-can now use literal Unicode characters as part of strings, variable
-names, and regular expressions.
+The C<use utf8> pragma tells the Perl parser to allow UTF-8 in the program text in the current
+lexical scope. This also means that you can now use literal Unicode characters as part of strings,
+variable names, and regular expressions.
 
 C<utf8::all> goes further:
 
@@ -27,48 +26,52 @@ C<utf8::all> goes further:
 
 =item *
 
-L<C<charnames>|charnames> are imported so C<\N{...}> sequences can be
-used to compile Unicode characters based on names.
+L<C<charnames>|charnames> are imported so C<\N{...}> sequences can be used to compile Unicode
+characters based on names.
 
 =item *
 
-On Perl C<v5.11.0> or higher, the C<use feature 'unicode_strings'> is
-enabled.
+On Perl C<v5.11.0> or higher, the C<use feature 'unicode_strings'> is enabled.
 
 =item *
 
-C<use feature fc> and C<use feature unicode_eval> are enabled on Perl
-C<5.16.0> and higher.
+C<use feature fc> and C<use feature unicode_eval> are enabled on Perl C<5.16.0> and higher.
 
 =item *
 
-Filehandles are opened with UTF-8 encoding turned on by default
-(including C<STDIN>, C<STDOUT>, and C<STDERR> when C<utf8::all> is
-used from the C<main> package). Meaning that they automatically
-convert UTF-8 octets to characters and vice versa. If you I<don't>
-want UTF-8 for a particular filehandle, you'll have to set C<binmode
-$filehandle>.
+Filehandles are opened with UTF-8 encoding turned on by default (including C<STDIN>, C<STDOUT>, and
+C<STDERR> when C<utf8::all> is used from the C<main> package). Meaning that they automatically
+convert UTF-8 octets to characters and vice versa. If you I<don't> want UTF-8 for a particular
+filehandle, you'll have to set C<binmode $filehandle>.
 
 =item *
 
-C<@ARGV> gets converted from UTF-8 octets to Unicode characters (when
-C<utf8::all> is used from the C<main> package). This is similar to the
-behavior of the C<-CA> perl command-line switch (see L<perlrun>).
+C<@ARGV> gets converted from UTF-8 octets to Unicode characters (when C<utf8::all> is used from the
+C<main> package). This is similar to the behavior of the C<-CA> perl command-line switch (see
+L<perlrun>).
 
 =item *
 
-C<readdir>, C<readlink>, C<readpipe> (including the C<qx//> and
-backtick operators), and L<C<glob>|perlfunc/glob> (including the C<<
-<> >> operator) now all work with and return Unicode characters
-instead of (UTF-8) octets (again only when C<utf8::all> is used from
-the C<main> package).
+The following now all work with and return Unicode characters instead of (UTF-8) octets, again only
+when C<utf8::all> is used from the C<main> package:
+
+=over 4
+
+=item * C<readdir>
+
+=item * C<readlink>
+
+=item * C<readpipe>, including the C<qx//> and backtick operators
+
+=item * L<C<glob>|perlfunc/glob>, including the C<< <> >> operator
+
+=back
 
 =back
 
 =head2 Lexical Scope
 
-The pragma is lexically-scoped, so you can do the following if you had
-some reason to:
+The pragma is lexically-scoped, so you can do the following if you had some reason to:
 
     {
         use utf8::all;
@@ -81,45 +84,48 @@ some reason to:
     my $text = do { local $/; <$in>};
     print length $text, "\n";         # 10, not 7!
 
-Instead of lexical scoping, you can also use C<no utf8::all> to turn
-off the effects.
+Instead of lexical scoping, you can also use C<no utf8::all> to turn off the effects.
 
-Note that the effect on C<@ARGV> and the C<STDIN>, C<STDOUT>, and
-C<STDERR> file handles is always global and can not be undone!
+Note that the effect on C<@ARGV> and the C<STDIN>, C<STDOUT>, and C<STDERR> file handles is always
+global and can not be undone!
 
 =head2 Enabling/Disabling Global Features
 
-As described above, the default behavior of C<utf8::all> is to
-convert C<@ARGV> and to open the C<STDIN>, C<STDOUT>, and C<STDERR>
-file handles with UTF-8 encoding, and override the C<readlink> and
-C<readdir> functions and C<glob> operators when C<utf8::all> is used
-from the C<main> package.
+As described above, the default behavior of C<utf8::all> is to:
 
-If you want to disable these features even when C<utf8::all> is used
-from the C<main> package, add the option C<NO-GLOBAL> (or
-C<LEXICAL-ONLY>) to the use line. E.g.:
+=over 4
+
+=item * convert C<@ARGV>
+
+=item * open the C<STDIN>, C<STDOUT>, and C<STDERR> file handles with UTF-8 encoding
+
+=item * override the C<readlink> and C<readdir> functions and C<glob> operators when C<utf8::all> is
+used from the C<main> package
+
+=back
+
+If you want to disable these features even when C<utf8::all> is used from the C<main> package, add
+the option C<NO-GLOBAL> (or C<LEXICAL-ONLY>) to the use line. E.g.:
 
     use utf8::all 'NO-GLOBAL';
 
-If on the other hand you want to enable these global effects even when
-C<utf8::all> was used from another package than C<main>, use the
-option C<GLOBAL> on the use line:
+If on the other hand you want to enable these global effects even when C<utf8::all> was used from
+another package than C<main>, use the option C<GLOBAL> on the use line:
 
     use utf8::all 'GLOBAL';
 
 =head2 UTF-8 Errors
 
-C<utf8::all> will handle invalid code points (i.e., utf-8 that does
-not map to a valid unicode "character"), as a fatal error.
+C<utf8::all> will handle invalid code points (i.e., utf-8 that does not map to a valid unicode
+"character"), as a fatal error.
 
-For C<glob>, C<readdir>, and C<readlink>, one can change this
-behavior by setting the attribute L</"$utf8::all::UTF8_CHECK">.
+For C<glob>, C<readdir>, and C<readlink>, one can change this behavior by setting the attribute
+L</"$utf8::all::UTF8_CHECK">.
 
 =head1 COMPATIBILITY
 
-The filesystems of Dos, Windows, and OS/2 do not (fully) support
-UTF-8. The C<readlink> and C<readdir> functions and C<glob> operators
-will therefore not be replaced on these systems.
+The filesystems of Dos, Windows, and OS/2 do not (fully) support UTF-8. The C<readlink> and
+C<readdir> functions and C<glob> operators will therefore not be replaced on these systems.
 
 =head1 SEE ALSO
 
@@ -153,15 +159,13 @@ $Carp::Internal{$current_package}++; # To get warnings reported at correct calle
 
 =attr $utf8::all::UTF8_CHECK
 
-By default C<utf8::all> marks decoding errors as fatal (default value
-for this setting is C<Encode::FB_CROAK>). If you want, you can change this by
-setting C<$utf8::all::UTF8_CHECK>. The value C<Encode::FB_WARN> reports
-the encoding errors as warnings, and C<Encode::FB_DEFAULT> will completely
-ignore them. Please see L<Encode> for details. Note: C<Encode::LEAVE_SRC> is
-I<always> enforced.
+By default C<utf8::all> marks decoding errors as fatal (default value for this setting is
+C<Encode::FB_CROAK>). If you want, you can change this by setting C<$utf8::all::UTF8_CHECK>. The
+value C<Encode::FB_WARN> reports the encoding errors as warnings, and C<Encode::FB_DEFAULT> will
+completely ignore them. Please see L<Encode> for details. Note: C<Encode::LEAVE_SRC> is I<always>
+enforced.
 
-Important: Only controls the handling of decoding errors in C<glob>,
-C<readdir>, and C<readlink>.
+Important: Only controls the handling of decoding errors in C<glob>, C<readdir>, and C<readlink>.
 
 =cut
 
@@ -219,10 +223,9 @@ sub import {
         $^H{'utf8::all'} = 1;
     }
 
-    # Make @ARGV utf-8 when, unless perl was launched with the -CA
-    # flag as this already has @ARGV decoded automatically.  -CA is
-    # active if the the fifth bit (32) of the ${^UNICODE} variable is
-    # set.  (see perlrun on the -C command switch for details about
+    # Make @ARGV utf-8 when, unless perl was launched with the -CA flag as this already has @ARGV
+    # decoded automatically. -CA is active if the the fifth bit (32) of the ${^UNICODE} variable is
+    # set. (see perlrun on the -C command switch for details about
     # ${^UNICODE})
     unless ($no_global || (${^UNICODE} & 32)) {
         state $have_encoded_argv = 0;
@@ -301,11 +304,9 @@ sub _utf8_glob {
 
 =head1 INTERACTION WITH AUTODIE
 
-If you use L<autodie>, which is a great idea, you need to use at least
-version B<2.12>, released on L<June 26,
-2012|https://metacpan.org/source/PJF/autodie-2.12/Changes#L3>.
-Otherwise, autodie obliterates the IO layers set by the L<open>
-pragma. See L<RT
+If you use L<autodie>, which is a great idea, you need to use at least version B<2.12>, released on
+L<June 26, 2012|https://metacpan.org/source/PJF/autodie-2.12/Changes#L3>. Otherwise, autodie
+obliterates the IO layers set by the L<open> pragma. See L<RT
 #54777|https://rt.cpan.org/Ticket/Display.html?id=54777> and L<GH
 #7|https://github.com/doherty/utf8-all/issues/7>.
 
