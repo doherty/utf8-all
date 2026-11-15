@@ -101,7 +101,7 @@ WriteMakefile(%WriteMakefileArgs);
     sub manifypods {
         my ($self) = @_;
 
-        my $date = '2026-11-08';
+        my $date = '2026-11-15';
         my %center_of = (1 => 'User Commands', 3 => 'Perl Programmers Reference Guide');
         my (@pods, @commands);
         for my $section (1, 3) {

@@ -10,13 +10,13 @@ use Test::More 0.96;
 use Config;
 
 BEGIN {
-    plan skip_all => "Requires threads"
-        if !$Config{usethreads};
+  plan skip_all => "Requires threads"
+      if !$Config{usethreads};
 
-    plan skip_all => "Thread support on Perl <= v5.10.0 is unstable"
-        if $^V <= v5.10.0;
+  plan skip_all => "Thread support on Perl <= v5.10.0 is unstable"
+      if $^V <= v5.10.0;
 
-    plan tests => 1;
+  plan tests => 1;
 }
 
 # Deliberately before loading threads so we don't cheat and check if threads are loaded, that would
@@ -26,7 +26,7 @@ use utf8::all;
 use threads;
 use threads::shared;
 
-my $ok :shared = 0;
+my $ok : shared = 0;
 my $t = threads->create(sub { $ok = 1; });
 $t->join();
 ok $ok, "threads ok with utf8::all";

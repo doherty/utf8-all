@@ -9,10 +9,10 @@ plan $^V >= v5.16.0
     : (skip_all => q/Can't enable fc on perl < 5.16.0/);
 
 {
-    no warnings qw(syntax);
-    eval q/fc 'ABC' eq fc 'abc';/;
-    ok $@, 'Got an error using fc without utf8::all...';
-    like $@ => qr/^syntax error/, '...and the error was a syntax error' or diag $@;
+  no warnings qw(syntax);
+  eval q/fc 'ABC' eq fc 'abc';/;
+  ok $@, 'Got an error using fc without utf8::all...';
+  like $@ => qr/^syntax error/, '...and the error was a syntax error' or diag $@;
 }
 
 eval q/ use utf8::all; fc 'XYZ' eq fc 'xyz'; /;

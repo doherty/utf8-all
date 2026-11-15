@@ -1,0 +1,44 @@
+# The layout of the Perl code in this distribution, for perltidy. Run perltidy in the root directory
+# of the distribution to use it, e.g. perltidy -b -bext='/' lib/Some/Module.pm.
+#
+# The options are a copy of those in the author's own ~/.perltidyrc.
+
+# Lines up to 100 columns. Blocks indent by 2, continuation lines by 4, like google-java-format.
+-l=100
+-i=2
+-ci=4
+
+# No spaces inside parentheses or square brackets: f($x), [1, 2]. Curly braces around a single
+# token are tight as well, around more they get spaces: @{$list}, $h{key}, @{ $h->{list} }.
+-pt=2
+-sbt=2
+-bt=1
+
+# A cuddled else: } else {
+-ce
+
+# Only => is aligned across lines, as in a GetOptions list.
+-vil='=>'
+
+# A side comment is one space after the code, without aligning it with others.
+-msc=1
+-nvsc
+
+# No blank lines added before blocks or comments.
+-nbbb
+-nbbc
+
+# Lists in square or curly brackets that are already broken at commas stay broken there, like a
+# table of test cases. Lists in parentheses are laid out by perltidy: on one line when they fit,
+# otherwise broken after the opening parenthesis.
+-boc
+-boct='[ {'
+
+# Nested containers like f({ … }) stay together, a one-line block may hold one more, like
+# sub { eval { … } }, and a C-style for has no space before its semicolons.
+-wn
+-olbn=1
+-nsfs
+
+# Repeat the layout until it no longer changes, so a second run changes nothing.
+-conv

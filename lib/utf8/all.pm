@@ -178,128 +178,128 @@ our $UTF8_CHECK = Encode::FB_CROAK | Encode::LEAVE_SRC; # Die on encoding errors
 my $_UTF8 = Encode::find_encoding('UTF-8');
 
 sub import {
-    # Enable features/pragmas in calling package
-    my $target = caller;
+  # Enable features/pragmas in calling package
+  my $target = caller;
 
-    # Enable global effects be default only when imported from main package
-    my $no_global = $target ne 'main';
+  # Enable global effects be default only when imported from main package
+  my $no_global = $target ne 'main';
 
-    # Override global?
-    if (defined $_[1] && $_[1] =~ /^(?:(NO-)?GLOBAL|LEXICAL-ONLY)$/i) {
-        $no_global = $_[1] !~ /^GLOBAL$/i;
-        splice(@_, 1, 1); # Remove option from import's arguments
+  # Override global?
+  if (defined $_[1] && $_[1] =~ /^(?:(NO-)?GLOBAL|LEXICAL-ONLY)$/i) {
+    $no_global = $_[1] !~ /^GLOBAL$/i;
+    splice(@_, 1, 1); # Remove option from import's arguments
+  }
+
+  'utf8'->import::into($target);
+  'open'->import::into($target, 'IO' => ':utf8_strict');
+
+  # use open ':std' only works with some encodings.
+  state $have_encoded_std = 0;
+  unless ($no_global || $have_encoded_std++) {
+    binmode STDERR, ':utf8_strict';
+    binmode STDOUT, ':utf8_strict';
+    binmode STDIN, ':utf8_strict';
+  }
+
+  'charnames'->import::into($target, qw{:full :short});
+  'warnings'->import::into($target, qw{FATAL utf8});
+  'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
+  'feature'->import::into($target, qw{unicode_eval fc}) if $^V >= v5.16.0;
+
+  unless ($no_global || $^O =~ /MSWin32|cygwin|dos|os2/) {
+    no strict qw(refs); ## no critic (TestingAndDebugging::ProhibitNoStrict)
+    no warnings qw(redefine);
+
+    # Replace readdir with utf8 aware version
+    *{ $target . '::readdir' } = \&_utf8_readdir;
+
+    # Replace readdir with utf8 aware version
+    *{ $target . '::readlink' } = \&_utf8_readlink;
+
+    # Replace glob with utf8 aware version
+    *{ $target . '::glob' } = \&_utf8_glob;
+
+    # Set compiler hint to encode/decode in the redefined functions
+    $^H{'utf8::all'} = 1;
+  }
+
+  # Make @ARGV utf-8 when, unless perl was launched with the -CA flag as this already has @ARGV
+  # decoded automatically. -CA is active if the the fifth bit (32) of the ${^UNICODE} variable is
+  # set. (see perlrun on the -C command switch for details about
+  # ${^UNICODE})
+  unless ($no_global || (${^UNICODE} & 32)) {
+    state $have_encoded_argv = 0;
+    if (!$have_encoded_argv++) {
+      $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
+      $_ = ($_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_) for @ARGV;
     }
+  }
 
-    'utf8'->import::into($target);
-    'open'->import::into($target, 'IO' => ':utf8_strict');
-
-    # use open ':std' only works with some encodings.
-    state $have_encoded_std = 0;
-    unless ($no_global || $have_encoded_std++) {
-        binmode STDERR, ':utf8_strict';
-        binmode STDOUT, ':utf8_strict';
-        binmode STDIN,  ':utf8_strict';
-    }
-
-    'charnames'->import::into($target, qw{:full :short});
-    'warnings'->import::into($target, qw{FATAL utf8});
-    'feature'->import::into($target, qw{unicode_strings}) if $^V >= v5.11.0;
-    'feature'->import::into($target, qw{unicode_eval fc}) if $^V >= v5.16.0;
-
-    unless ($no_global || $^O =~ /MSWin32|cygwin|dos|os2/) {
-        no strict qw(refs); ## no critic (TestingAndDebugging::ProhibitNoStrict)
-        no warnings qw(redefine);
-
-        # Replace readdir with utf8 aware version
-        *{$target . '::readdir'} = \&_utf8_readdir;
-
-        # Replace readdir with utf8 aware version
-        *{$target . '::readlink'} = \&_utf8_readlink;
-
-        # Replace glob with utf8 aware version
-        *{$target . '::glob'} = \&_utf8_glob;
-
-        # Set compiler hint to encode/decode in the redefined functions
-        $^H{'utf8::all'} = 1;
-    }
-
-    # Make @ARGV utf-8 when, unless perl was launched with the -CA flag as this already has @ARGV
-    # decoded automatically. -CA is active if the the fifth bit (32) of the ${^UNICODE} variable is
-    # set. (see perlrun on the -C command switch for details about
-    # ${^UNICODE})
-    unless ($no_global || (${^UNICODE} & 32)) {
-        state $have_encoded_argv = 0;
-        if (!$have_encoded_argv++) {
-            $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
-            $_ = ($_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_) for @ARGV;
-        }
-    }
-
-    return;
+  return;
 }
 
 sub unimport { ## no critic (Subroutines::ProhibitBuiltinHomonyms)
-    # Disable features/pragmas in calling package
-    # Note: Does NOT undo the effect on @ARGV,
-    #       nor on the STDIN, STDOUT, and STDERR file handles!
-    #       These effects are always "global".
+   # Disable features/pragmas in calling package
+   # Note: Does NOT undo the effect on @ARGV,
+   #       nor on the STDIN, STDOUT, and STDERR file handles!
+   #       These effects are always "global".
 
-    my $target = caller;
-    'utf8'->unimport::out_of($target);
-    'open'->import::into($target, qw{IO :bytes});
+  my $target = caller;
+  'utf8'->unimport::out_of($target);
+  'open'->import::into($target, qw{IO :bytes});
 
-    unless ($^O =~ /MSWin32|cygwin|dos|os2/) {
-        $^H{'utf8::all'} = 0; # Reset compiler hint
-    }
+  unless ($^O =~ /MSWin32|cygwin|dos|os2/) {
+    $^H{'utf8::all'} = 0; # Reset compiler hint
+  }
 
-    return;
+  return;
 }
 
 sub _utf8_readdir(*) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
-    my $pre_handle = shift;
-    my $hints = (caller 0)[10];
-   my $handle = ref($pre_handle) ? $pre_handle : qualify_to_ref($pre_handle, caller);
-    if (not $hints->{'utf8::all'}) {
-        return CORE::readdir($handle);
+  my $pre_handle = shift;
+  my $hints = (caller 0)[10];
+  my $handle = ref($pre_handle) ? $pre_handle : qualify_to_ref($pre_handle, caller);
+  if (not $hints->{'utf8::all'}) {
+    return CORE::readdir($handle);
+  } else {
+    $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
+    if (wantarray) {
+      return map { $_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_ } CORE::readdir($handle);
     } else {
-        $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
-        if (wantarray) {
-            return map { $_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_ } CORE::readdir($handle);
-        } else {
-            my $r = CORE::readdir($handle);
-            return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
-        }
+      my $r = CORE::readdir($handle);
+      return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
     }
+  }
 }
 
 sub _utf8_readlink(_) { ## no critic (Subroutines::ProhibitSubroutinePrototypes)
-    my $arg = shift;
-    my $hints = (caller 0)[10];
-    if (not $hints->{'utf8::all'}) {
-        return CORE::readlink($arg);
-    } else {
-        $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
-        $arg = $arg ? $_UTF8->encode($arg, $UTF8_CHECK) : $arg;
-        my $r = CORE::readlink($arg);
-        return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
-    }
+  my $arg = shift;
+  my $hints = (caller 0)[10];
+  if (not $hints->{'utf8::all'}) {
+    return CORE::readlink($arg);
+  } else {
+    $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
+    $arg = $arg ? $_UTF8->encode($arg, $UTF8_CHECK) : $arg;
+    my $r = CORE::readlink($arg);
+    return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
+  }
 }
 
 sub _utf8_glob {
-    my $arg = $_[0]; # Making this a lexical somehow is important!
-    my $hints = (caller 0)[10];
-    if (not $hints->{'utf8::all'}) {
-        return CORE::glob($arg);
+  my $arg = $_[0]; # Making this a lexical somehow is important!
+  my $hints = (caller 0)[10];
+  if (not $hints->{'utf8::all'}) {
+    return CORE::glob($arg);
+  } else {
+    $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
+    $arg = $arg ? $_UTF8->encode($arg, $UTF8_CHECK) : $arg;
+    if (wantarray) {
+      return map { $_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_ } CORE::glob($arg);
     } else {
-        $UTF8_CHECK |= Encode::LEAVE_SRC if $UTF8_CHECK; # Enforce LEAVE_SRC
-        $arg = $arg ? $_UTF8->encode($arg, $UTF8_CHECK) : $arg;
-        if (wantarray) {
-            return map { $_ ? $_UTF8->decode($_, $UTF8_CHECK) : $_ } CORE::glob($arg);
-        } else {
-            my $r = CORE::glob($arg);
-            return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
-        }
+      my $r = CORE::glob($arg);
+      return $r ? $_UTF8->decode($r, $UTF8_CHECK) : $r;
     }
+  }
 }
 
 =head1 INTERACTION WITH AUTODIE
